@@ -24,7 +24,7 @@
 #         Input = 
 #                 a) pollinators_joined_with_grids_5.rds
 #                 b) NA24_gridded_map.geojson
-#         Output = filtered_5.rds                                   first version
+#         Output = filtered_5.rds                                   first version, repeats below
 
 
 ###### 4. Filtering Data for Phenological Estimates_up.R 
@@ -74,68 +74,46 @@
 #                b)  filtered_5_with_GHMI.csv
 #                c)  NA24_gridded_map.geojson 
 #                d)  NA_24_clipped.geojson
-#                e)  mean_gHM.csv
-#                f)  phenology_estimates_data_for_analysis.rds
+#                e)  phenology_estimates_data_for_analysis.rds
 #         Output = 
-#                 a) frequency_Dione_vanillae_observations_over_time_grid_1656.png 
-#                 b) frequency_Bombus_impatiens_observations_over_time_grid_1656.png
-#                 c) frequency_Phoebis_sennae_observations_over_time_grid_1656.png
-#                 d) frequency_Epargyreus_clarus_observations_over_time_grid_1656.png
-#                 e) frequency_Hylephila_phyleus_observations_over_time_grid_1656.png
-#                 f) frequency_all_species_observations_over_time_grid_1656.png
-#                 g) frequency_Bombus_impatiens_observations_over_time_all_grids.png
-#                 h) observation_frequency_over_time_by_family.png
-#                 i) observation_frequency_over_time_by_order.png
-#                 j) observations_with_landsat_variables.rds
-#                 k) Lepodoptera_Observations_in_Low_and_High_GHMI.png
-#                 l) Dione_vanillae_Observations_in_Low_and_High_GHMI.png
-#                 m) Dione_vanillae_Observations_in_Low_and_High_GHMI_two_figures.png
-#                 n) map_of_species_per_grid_cell.png
-#                 o) map_of_observations_per_grid_cell.png
-#                 p) GHMI_map_of_Bioregion_NA24.png
-#                 q) Bombus_impatiens_observations_across_grids.png
-#                 r) Papilio_glaucus_observations_across_grids.png
-#                 s) Xylocopa_virginica_observations_across_grids.png
-#                 t) Apis_mellifera_observations_across_grids.png
+#                 a) Lepidoptera_Observations_in_Low_and_High_GHMI.png 
+#                 b) Hymenoptera_Observations_in_Low_and_High_GHMI.png
+#                 c) Coleoptera_Observations_in_Low_and_High_GHMI
+#                 d) Diptera_Observations_in_Low_and_High_GHMI.png
+#                 e) map_of_species_per_grid_cell.png
+#                 f) map_of_species_per_grid_cell_centroids.png
+#                 g) map_of_observations_per_grid_cell.png
+#                 h) GHMI_map_of_Bioregion_NA24.png
+#                 i) distribution_of_GHMI_values_in_Bioregion_NA24.png
+#                 j) map_of_US_and_BioregionNA24.png
+#                 k) NA24_satellite_cutout.png
 
 
-###### 9. Phenology Figures.R
-#         Input = phenology_estimates_data_for_analysis.rds
+###### 10. Phenology Figures.R
+#         Input =
+#                 a) final_phenology_df_for_analysis.RDS
+#                 b) gam_results_by_species_w_climate.csv
+#                 c) species_gam_full_w_climate.rds
 #         Output = 
-#                 a) phenology_estimates_all_species_each_grid_with_landsat
-#                 b) phenology_estimates_example_for_grid_390.png
-#                 c) phenology_estimates_all_species_across_all_grids.png
-#                 d) phenology_estimates_all_species_across_all_grids_separate_graphs.png
-#                 e) phenology_estimates_Apis_mellifera_all_grids.png
-#                 f) phenology_estimates_Automeris_io_all_grids.png
-#                 g) Automeris_io_medians_Fl_map.png
-#                 h) Dione_vanillae_medians_Fl_map.png
-#                 i) Lepidoptera_medians_Fl_map.png
-#                 j) Hymenoptera_medians_Fl_map.png
-#                 k) Diptera_medians_Fl_map.png
-#                 l) Coleoptera_medians_Fl_map.png
-#                 m) medians_Fl_map.png
-#                 n) mean_median_offset_duration_in_low_versus_high_ghmi.png
-#                 o) total_duration_low_versus_high_urban_for_10_random_species.png
-#                 p) onset_low_versus_high_urban_for_10_random_species.png
-#                 q) onset_median_offset_in_low_versus_high_urban.png
-#                 r) total_duration_in_low_versus_high_urban_for_10_random_leps.png
-#                 s) total_duration_in_low_versus_high_urban_for_functional_groups_10_species.png
-#                 t) total_duration_in_low_versus_high_urban_for_10_pre-selected_species.png
-#                 u) onset_in_low_versus_high_urban_for_10_pre-selected_species.png
-#                 v) offset_in_low_versus_high_urban_for_10_pre-selected_species.png 
-#                 w) slope_of_species_duration_plot_20_random_species.png
-#                 x) slope_of_ten_selected_species_duration_plot.png
-#                 y) slope_of_ten_selected_species_onset_plot.png
-#                 z) slope_of_ten_selected_species_offset_plot.png
-#                 aa) slope_of_all_Lepidoptera_species_duration_plot.png
-#                 bb) slope_of_species_duration_plot.png
-#                 cc) slope_of_species_onset_plot.png
-#                 dd) slope_of_species_offset_plot.png
+#                 a) slope_of_species_duration_plot_w_climate.png
+#                 b) slope_of_species_onset_plot_w_climate.png
+#                 c) slope_of_species_offset_plot_w_climate.png
+#                 d) combined_plot_phenology_slopes_of_all_species_w_climate.png
+#                 e) combined_plot_phenology_slopes_of_all_species_w_climate_solid_background.png
+#                 f) combined_plot_phenology_slopes_of_all_species_with_climate_PowerPoint_dimensions.png
+#                 g) duration_across_ghmi_for_6_species_w_climate.png
+#                 h) duration_across_ghmi_for_6_species_w_climate_solid_white_background.png
+#                 i) duration_across_ghmi_for_6_species_w_climate_PowerPoint_dimensions.png
+#                 j) onset_across_ghmi_for_10_species_w_climate.png
+#                 k) onset_across_ghmi_for_10_species_w_climate_solid_white_background.png
+#                 l) onset_across_ghmi_for_10_species_w_climate_PowerPoint_dimensions.png
+#                 m) offset_across_ghmi_for_12_species_w_climate.png
+#                 n) offset_across_ghmi_for_12_species_w_climate_solid_white_background.png
+#                 o) offset_across_ghmi_for_12_species_w_climate_PowePoint_dimensions.png
 
 
 
-###### 10. GAM_Analysis_GHMI.R
+###### 11. GAM_Analysis_GHMI.R
 #         Input = 
 #                 a) phenology_estimates_data_for_analysis.rds
 #                 b) Climate_Data/climate_summarized.csv

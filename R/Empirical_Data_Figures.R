@@ -18,7 +18,6 @@ filtered_5 <- readRDS("Data/filtered_5.rds") #observations used to make phenolog
 filtered_5_with_landsat <- read.csv("Data/filtered_5_with_GHMI.csv") # mean GHMI for each grid 
 grids_5 <- st_read("Data/Spatial Data/gridded map of NA24 region/NA24_gridded_map.geojson") #gridded map
 NA_24 <- st_read("Data/Spatial Data/ecoregion geojson/NA_24_clipped.geojson") #map of bioregion NA24 (no grids)
-GHMI <- read.csv("Data/Spatial Data/GHMI/mean_gHM.csv") #mean GHMI per grid of bioregion NA24
 fp_data <- readRDS("Data/final_phenology_df_for_analysis.RDS")
 #final data frame that was used for in the GAMs so that our raw data can be matched to the
 #species x grid combinations that were actually used for analysis
@@ -105,231 +104,9 @@ obs_over_months_order <- observations_with_landsat_variables %>%
 ##########################################################################################################################
 
 
-############################################## Figure 1: Frequency of Dione vanillae 
-############################################## Occurrences Over Time (2008-2024) in grid 1656
-
-#Subset grid 1656
-grid1656 <- observations_with_landsat_variables%>%
-  filter(grid_id==1656)
-unique(filtered_5$species)
 
 
-# Group counts by species, months, and years 
-counts <- grid1656 %>%
-  group_by(species, year, month) %>%
-  filter(species=="Dione vanillae") %>%
-  summarize(frequency = n(), .groups = 'drop')
-
-# Plot it
-ggplot(counts, aes(x = month, y = frequency, fill = species)) +
-  geom_bar(stat = "identity", position = "dodge") +  # Positioning bars side by side
-  labs(title = "Frequency of Dione vanillae Occurrences Over Time (2008-2024) in grid 1656",
-       x = "Month",
-       y = "Frequency",
-       fill = "Species") +
-  scale_x_discrete(limits = month.abb) +  # Ensure month order
-  theme_minimal()
-
-ggsave("Figures/frequency_Dione_vanillae_observations_over_time_grid_1656.png", width=6, height=6, units="in")
-
-
-############################################## Figure 2: Frequency of Bombus impatiens
-############################################## Occurrences Over Time (2008-2024) in grid 1656
-
-
-B_impatiens_1656 <- grid1656 %>%
-  group_by(species, year, month) %>%
-  filter(species=="Bombus impatiens") %>%
-  summarize(frequency = n(), .groups = 'drop')
-
-# Plot it
-ggplot(B_impatiens_1656, aes(x = month, y = frequency, fill = species)) +
-  geom_bar(stat = "identity", position = "dodge") +  # Positioning bars side by side
-  labs(title = "Frequency of Bombus impatiens Occurrences Over Time (2008-2024) in grid 1656",
-       x = "Month",
-       y = "Frequency",
-       fill = "Species") +
-  scale_x_discrete(limits = month.abb) +  # Ensure month order
-  theme_minimal()
-
-ggsave("Figures/frequency_Bombus_impatiens_observations_over_time_grid_1656.png", width=6, height=6, units="in")
-
-
-############################################## Figure 3: Frequency of Phoebis sennae
-############################################## Occurrences Over Time (2008-2024) in grid 1656
-
-P_sennae_1656 <- grid1656 %>%
-  group_by(species, year, month) %>%
-  filter(species=="Phoebis sennae") %>%
-  summarize(frequency = n(), .groups = 'drop')
-
-# Plot it
-ggplot(P_sennae_1656, aes(x = month, y = frequency, fill = species)) +
-  geom_bar(stat = "identity", position = "dodge") +  # Positioning bars side by side
-  labs(title = "Frequency of Phoebis sennae Occurrences Over Time (2008-2024) in grid 1656",
-       x = "Month",
-       y = "Frequency",
-       fill = "Species") +
-  scale_x_discrete(limits = month.abb) +  # Ensure month order
-  theme_minimal()
-ggsave("Figures/frequency_Phoebis_sennae_observations_over_time_grid_1656.png", width=6, height=6, units="in")
-
-
-############################################## Figure 4: Frequency of Epargyreus clarus
-############################################## Occurrences Over Time (2008-2024) in grid 1656
-
-E_clarus_1656 <- grid1656 %>%
-  group_by(species, year, month) %>%
-  filter(species=="Epargyreus clarus") %>%
-  summarize(frequency = n(), .groups = 'drop')
-
-# Plot it
-ggplot(E_clarus_1656, aes(x = month, y = frequency, fill = species)) +
-  geom_bar(stat = "identity", position = "dodge") +  # Positioning bars side by side
-  labs(title = "Frequency of Epargyreus clarus Occurrences Over Time (2008-2024) in grid 1656",
-       x = "Month",
-       y = "Frequency",
-       fill = "Species") +
-  scale_x_discrete(limits = month.abb) +  # Ensure month order
-  theme_minimal()
-ggsave("Figures/frequency_Epargyreus_clarus_observations_over_time_grid_1656.png", width=6, height=6, units="in")
-
-
-############################################## Figure 5: Frequency of Hylephila phyleus
-############################################## Occurrences Over Time (2008-2024) in grid 7
-
-H_phyleus_1656 <- grid1656 %>%
-  group_by(species, year, month) %>%
-  filter(species=="Hylephila phyleus") %>%
-  summarize(frequency = n(), .groups = 'drop')
-
-# Plot it
-ggplot(H_phyleus_1656, aes(x = month, y = frequency, fill = species)) +
-  geom_bar(stat = "identity", position = "dodge") +  # Positioning bars side by side
-  labs(title = "Frequency of Hylephila phyleus Occurrences Over Time (2008-2024) in grid 1656",
-       x = "Month",
-       y = "Frequency",
-       fill = "Species") +
-  scale_x_discrete(limits = month.abb) +  # Ensure month order
-  theme_minimal()
-ggsave("Figures/frequency_Hylephila_phyleus_observations_over_time_grid_1656.png", width=6, height=6, units="in")
-
-
-############################################## Figure 6: Frequency of all species
-############################################## Occurrences Over Time (2008-2024) in grid 1656
-
-#Let's look at all species in grid 4145
-
-#plot it 
-grid1656 %>%
-  filter(!is.na(eventDate)) %>%  # Remove rows with missing eventDate
-  mutate(day_of_year = as.integer(yday(eventDate))) %>%  # Calculate day_of_year
-  ggplot(aes(x = day_of_year)) +
-  geom_histogram(binwidth = 1, fill = "skyblue", color = "black", alpha = 0.7) +
-  theme_minimal() +
-  labs(title = "Observation Frequency Throughout the Year in Grid 1656",
-       x = "Day of Year",
-       y = "Frequency") +
-  facet_wrap(~species, scales = "fixed") + # Facet by species with fixed y scales
-  ylim(0, 8)
-ggsave("Figures/frequency_all_species_observations_over_time_grid_1656.png", width=6, height=6, units="in")
-
-
-############################################## Figure 7: Frequency of Bombus impatiens
-############################################## Occurrences Over Time (2008-2024), across all grids
-
-#Bombus impatiens
-Bombus_impatiens <- observations_with_landsat_variables %>%
-  group_by(species, year, month) %>%
-  filter(species=="Bombus impatiens") %>%
-  summarize(frequency = n(), .groups = 'drop')
-
-# Plot it
-ggplot(Bombus_impatiens, aes(x = month, y = frequency)) +
-  geom_bar(stat = "identity", position = "dodge") +  # Positioning bars side by side
-  labs(title = "Frequency of Bombus impatiens Occurrences Over Time (2008-2024)",
-       x = "Months",
-       y = "Frequency") +
-  scale_x_discrete(limits = month.abb) +  # Ensure month order
-  theme_minimal()
-ggsave("Figures/frequency_Bombus_impatiens_observations_over_time_all_grids.png", width=6, height=6, units="in")
-
-
-
-
-############################################## Figure 8: Frequency of Urbanus proteus
-############################################## Occurrences Over Time (2008-2024), across all grids
-
-observations_with_landsat_variables %>%
-  filter(!is.na(eventDate)) %>%  # Remove rows with missing eventDate
-  filter(species == "Urbanus proteus")%>%
-  mutate(day_of_year = as.integer(yday(eventDate))) %>%  # Calculate day_of_year
-  ggplot(aes(x = day_of_year)) +
-  geom_histogram(binwidth = 1, fill = "skyblue", color = "black", alpha = 0.7) +
-  theme_minimal() +
-  labs(title = "Frequency of Urbanus proteus Occurrences Over Time (2008-2024)",
-       x = "Day of Year",
-       y = "Frequency") +
-  theme(
-    axis.line.y = element_line(color = "black", linewidth = 0.5),
-    axis.line.x = element_line(color = "black", linewidth = 0.5) 
-  )
-
-
-ggsave("Figures/frequency_Urbanus_proteus_observations_over_time_all_grids.png", width=6, height=6, units="in")
-
-
-
-
-############################################## Figure 9: Observation Frequency Throughout 
-############################################## the Year by family
-
-observations_with_landsat_variables %>%
-  filter(!is.na(eventDate)) %>%  # Remove rows with missing eventDate
-  mutate(day_of_year = as.integer(yday(eventDate))) %>%  # Calculate day_of_year
-  ggplot(aes(x = day_of_year)) +
-  geom_histogram(binwidth = 1, fill = "skyblue", color = "black", alpha = 0.7) +
-  theme_minimal() +
-  labs(title = "Observation Frequency Throughout the Year by Family",
-       x = "Day of Year",
-       y = "Frequency") +
-  facet_wrap(~family, scales = "free_y")
-
-ggsave("Figures/observation_frequency_over_time_by_family.png", width=6, height=6, units="in")
-
-
-
-
-
-############################################## Figure 10: Observation Frequency Throughout 
-############################################## the Year by order
-
-#stacking it by order (family too big)
-observations_with_landsat_variables %>%
-  filter(!is.na(eventDate)) %>%  # Remove rows with missing eventDate
-  mutate(
-    day_of_year = as.integer(yday(eventDate)),  # Calculate day_of_year
-    order = factor(order)  # Ensure 'order is a factor
-  ) %>%
-  ggplot(aes(x = day_of_year, fill = order)) +  # Fill by 'family'
-  geom_bar(stat = "count", position = "stack") +  # Stacked bars
-  scale_fill_brewer(palette = "Set3") +  # Set color palette for families
-  theme_minimal() +
-  labs(
-    title = "Observation Frequency Throughout the Year by Order",
-    x = "Day of Year",
-    y = "Frequency"
-  ) +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1)) 
-
-ggsave("Figures/observation_frequency_over_time_by_order.png", width=6, height=6, units="in")
-
-
-
-
-
-
-############################################## Figure 11: Observation Frequency of Lepidoptera
+############################################## Figure 1: Observation Frequency of Lepidoptera
 ############################################## in Low versus High GHMI areas throughout the Year
 
 lepidoptera_data <- observations_with_landsat_variables %>%
@@ -373,7 +150,7 @@ ggsave("Figures/Lepidoptera_Observations_in_Low_and_High_GHMI.png", width=5.28, 
 
 
 
-############################################## Figure 12: Observation Frequency of Hymenoptera
+############################################## Figure 2: Observation Frequency of Hymenoptera
 ############################################## in Low versus High GHMI areas throughout the Year
 
 hymenoptera_data <- observations_with_landsat_variables %>%
@@ -417,7 +194,7 @@ ggsave("Figures/Hymenoptera_Observations_in_Low_and_High_GHMI.png", width=5.28, 
 
 
 
-############################################## Figure 13: Observation Frequency of Coleoptera
+############################################## Figure 3: Observation Frequency of Coleoptera
 ############################################## in Low versus High GHMI areas throughout the Year
 
 coleoptera_data <- observations_with_landsat_variables %>%
@@ -460,7 +237,7 @@ ggsave("Figures/Coleoptera_Observations_in_Low_and_High_GHMI.png", width=5.28, h
 
 
 
-############################################## Figure 14: Observation Frequency of Diptera
+############################################## Figure 4: Observation Frequency of Diptera
 ############################################## in Low versus High GHMI areas throughout the Year
 
 diptera_data <- observations_with_landsat_variables %>%
@@ -503,63 +280,7 @@ ggsave("Figures/Diptera_Observations_in_Low_and_High_GHMI.png", width=5.28, heig
 
 
 
-
-############################################## Figure 15: Observation Frequency of Dione vanillae
-############################################## in Low versus High GHMI areas throughout the Year
-
-D.v <- observations_with_landsat_variables %>%
-  filter(species == "Dione vanillae") %>%
-  filter((mean_GHMI >= 0 & mean_GHMI <= 0.3) | (mean_GHMI >= 0.7 & mean_GHMI <= 1)) 
-
-D.v <- D.v %>%
-  mutate(
-    day_of_year = as.integer(yday(eventDate)),  # Calculate day_of_year
-    GHMI_range = case_when(
-      mean_GHMI >= 0 & mean_GHMI <= 0.3 ~ "Range 0-0.3",  # Group for mean in [0, 0.3]
-      mean_GHMI >= 0.7 & mean_GHMI <= 1 ~ "Range 0.7-1",  # Group for mean in [0.7, 1]
-      TRUE ~ "Other"  # Optionally, classify other values if any (though they shouldn't be in this case)
-    )
-  )
-
-ggplot(D.v, aes(x = day_of_year, fill = GHMI_range)) +
-  geom_bar(stat = "count", position = "dodge") +  # Position bars side by side for GHMI ranges
-  scale_fill_brewer(palette = "Set1") +  
-  theme_minimal(base_size=16) +
-  labs(
-    # title = "Dione vanillae Observations by GHMI Value (Day of Year)",
-    x = "Day of Year",
-    y = "Frequency",
-    fill = "GHMI Range"
-  ) +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))
-#peak of activity shifted earlier in the year in more urbanized areas 
-
-ggsave("Figures/Dione_vanillae_Observations_in_Low_and_High_GHMI.png", width=6, height=6, units="in")
-
-
-
-
-
-############################################## Figure 16: Compare figure 11 and 12
-
-#look at them side-by-side
-ggplot(D.v, aes(x = day_of_year)) +  
-  geom_bar(stat = "count", color = "black", fill = "skyblue", alpha = 0.7) +  # Simple filled bars
-  facet_wrap(~ GHMI_range, scales = "free_y") +  # Separate plots for each GHMI range
-  theme_minimal() +
-  labs(
-    title = "Dione vanillae Observations by GHMI Range (Day of Year)",
-    x = "Day of Year",
-    y = "Frequency"
-  ) +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))
-
-ggsave("Figures/Dione_vanillae_Observations_in_Low_and_High_GHMI_two_figures.png", width=6, height=6, units="in")
-
-
-
-
-############################################## Figure 17: Map of Bioregion NA24 with number of species in each grid 
+############################################## Figure 5-6: Map of Bioregion NA24 with number of species in each grid 
 ###############                                cell
 
 #Summarize number of species in each grid cell 
@@ -655,7 +376,7 @@ ggsave("Figures/map_of_species_per_grid_cell_centroids.png", width=6, height=6, 
 
 
 
-############################################## Figure 18: Map of Bioregion NA24 with number of observations in 
+############################################## Figure 7: Map of Bioregion NA24 with number of observations in 
 ###############                                each grid cell 
 
 
@@ -702,7 +423,7 @@ ggsave("Figures/map_of_observations_per_grid_cell.png", width=6, height=6, units
 
 
 
-############################################## Figure 19: Map of GHMI across grid cells of Bioregion NA24 
+############################################## Figure 8: Map of GHMI across grid cells of Bioregion NA24 
 #Make GHMI dataframe into an sf object
 GHMI_merged <- grids_5 %>%
   left_join(GHMI, by = "grid_id")
@@ -733,151 +454,10 @@ ggsave("Figures/GHMI_map_of_Bioregion_NA24.png", width=6, height=6, units="in")
 
 
 
-############################################## Figure 20-23: Number of observations in gridded map of 
-#                                              NA24 of 4 sample species 
-
-#Look at species with most observations from the data frame that was created earlier in this script 
-obs
-
-#We will use the top 4 species with the most observations as example species. Listing them for filtering here:
-example_species <- c("Bombus impatiens", "Papilio glaucus", "Xylocopa virginica", "Apis mellifera")
-
-#Summarize for each species, how many observations are found in each grid
-obs_per_spec <- observations_with_landsat_variables %>%
-  filter(species %in% example_species) %>%
-  group_by(species, grid_id) %>%
-  summarise(obs_n = n(), .groups = "drop")
-obs_per_spec
-
-#Join with grids_5 to obtain the geometry column associated with unique grids 
-grid_with_obs_count_per_species <- grids_5 %>%
-  left_join(obs_per_spec, by = "grid_id")%>%
-  filter(species %in% example_species & !is.na(obs_n))  # filter out NA rows
-
-#Plot observations count (across Bioregion NA24 grids) of each of the following species: Bombus impatiens, Papilio glaucus,
-#Xylocopa virginica, and Apis mellifera
-
-
-#Bombus impatiens
-Bombus_impatiens <- grid_with_obs_count_per_species %>%
-  filter(species == "Bombus impatiens")
-
-ggplot(Bombus_impatiens) +
-  geom_sf(aes(fill = log10(obs_n)), color = NA) +
-  geom_sf(data = NA_24, color = "black", fill = NA, linewidth = 0.8) +
-  scale_fill_viridis_c(option = "plasma", na.value = NA) +
-  labs(
-    title = "Number of Bombus impatiens Observations per Grid Cell",
-    fill = "log10(Count)",
-    x = NULL,
-    y = NULL
-  ) +
-  theme_minimal(base_size = 14) +
-  theme(
-    panel.background = element_rect(fill = "transparent", color = NA),
-    plot.background = element_rect(fill = "transparent", color = NA),
-    legend.background = element_rect(fill = "transparent", color = NA),
-    legend.box.background = element_rect(fill = "transparent", color = NA),
-    axis.text = element_blank(),
-    axis.ticks = element_blank(),
-    panel.grid = element_blank(),
-    axis.title = element_blank()
-  )
-ggsave("Figures/Bombus_impatiens_observations_across_grids.png", width = 6, height = 6, units = "in", bg = "transparent")
 
 
 
-#Papilio glaucus,
-Papilio_glaucus <- grid_with_obs_count_per_species %>%
-  filter(species == "Papilio glaucus")
-
-ggplot(Papilio_glaucus) +
-  geom_sf(aes(fill = log10(obs_n)), color = NA) +
-  geom_sf(data = NA_24, color = "black", fill = NA, linewidth = 0.8) +
-  scale_fill_viridis_c(option = "plasma", na.value = NA) +
-  labs(
-    title = "Number of Papilio glaucus, Observations per Grid Cell",
-    fill = "log10(Count)",
-    x = NULL,
-    y = NULL
-  ) +
-  theme_minimal(base_size = 14) +
-  theme(
-    panel.background = element_rect(fill = "transparent", color = NA),
-    plot.background = element_rect(fill = "transparent", color = NA),
-    legend.background = element_rect(fill = "transparent", color = NA),
-    legend.box.background = element_rect(fill = "transparent", color = NA),
-    axis.text = element_blank(),
-    axis.ticks = element_blank(),
-    panel.grid = element_blank(),
-    axis.title = element_blank()
-  )
-ggsave("Figures/Papilio_glaucus_observations_across_grids.png", width = 6, height = 6, units = "in", bg = "transparent")
-
-
-#Xylocopa virginica
-Xylocopa_virginica <- grid_with_obs_count_per_species %>%
-  filter(species == "Xylocopa virginica")
-
-ggplot(Xylocopa_virginica) +
-  geom_sf(aes(fill = log10(obs_n)), color = NA) +
-  geom_sf(data = NA_24, color = "black", fill = NA, linewidth = 0.8) +
-  scale_fill_viridis_c(option = "plasma", na.value = NA) +
-  labs(
-    title = "Number of Xylocopa virginica Observations per Grid Cell",
-    fill = "log10(Count)",
-    x = NULL,
-    y = NULL
-  ) +
-  theme_minimal(base_size = 14) +
-  theme(
-    panel.background = element_rect(fill = "transparent", color = NA),
-    plot.background = element_rect(fill = "transparent", color = NA),
-    legend.background = element_rect(fill = "transparent", color = NA),
-    legend.box.background = element_rect(fill = "transparent", color = NA),
-    axis.text = element_blank(),
-    axis.ticks = element_blank(),
-    panel.grid = element_blank(),
-    axis.title = element_blank()
-  )
-ggsave("Figures/Xylocopa_virginica_observations_across_grids.png", width = 6, height = 6, units = "in", bg = "transparent")
-
-
-
-
-
-#Apis mellifera
-Apis_mellifera <- grid_with_obs_count_per_species %>%
-  filter(species == "Apis mellifera")
-
-ggplot(Apis_mellifera) +
-  geom_sf(aes(fill = log10(obs_n)), color = NA) +
-  geom_sf(data = NA_24, color = "black", fill = NA, linewidth = 0.8) +
-  scale_fill_viridis_c(option = "plasma", na.value = NA) +
-  labs(
-    title = "Number of Apis mellifera Observations per Grid Cell",
-    fill = "log10(Count)",
-    x = NULL,
-    y = NULL
-  ) +
-  theme_minimal(base_size = 14) +
-  theme(
-    panel.background = element_rect(fill = "transparent", color = NA),
-    plot.background = element_rect(fill = "transparent", color = NA),
-    legend.background = element_rect(fill = "transparent", color = NA),
-    legend.box.background = element_rect(fill = "transparent", color = NA),
-    axis.text = element_blank(),
-    axis.ticks = element_blank(),
-    panel.grid = element_blank(),
-    axis.title = element_blank()
-  )
-ggsave("Figures/Apis_mellifera_observations_across_grids.png", width = 6, height = 6, units = "in", bg = "transparent")
-
-
-
-
-
-############################################## Figure 24: quick histogram of the available GHMI values
+############################################## Figure 9: quick histogram of the available GHMI values
 #                                              available in Bioregion NA24
 
 # Quick visualization 
@@ -892,87 +472,6 @@ ggsave("Figures/distribution_of_GHMI_values_in_Bioregion_NA24.png", width=6, hei
 
 
 
-############################################## Figure 25: frequency of observations 
-#                                              across GHMI range over the years 
-
-# Frequency of observations across the years, grouped by GHMI. So for each GHMI level, 
-# how many observations were recorded each year? 
-
-# Place observations into GHMI bins, for plotting. Summarise number of observations 
-# in each GHMI bin each year 
-obs_over_GHMI <- observations_with_landsat_variables %>%
-  mutate(GHMI_bin = cut(mean_GHMI, breaks = seq(0, 1, by = 0.1))) %>%
-  group_by(GHMI_bin, year) %>%
-  summarise(obs = n(), .groups = "drop")
-
-# Plot it for just one year 
-obs_over_GHMI_2008 <- obs_over_GHMI %>%
-  filter(year == 2008)
-
-ggplot(obs_over_GHMI_2008, aes(x = GHMI_bin, y = obs)) +
-  geom_col(fill = "steelblue", color = "white") +
-  theme_classic(base_size = 14) +
-  labs(x = "GHMI", y = "Count",
-       title = "Frequency of Observations Over GHMI Range in 2008")
-
-# Now plot multiple years using facet_wrap
-ggplot(obs_over_GHMI, aes(x = GHMI_bin, y = obs)) +
-  geom_col(fill = "steelblue", color = "white") +
-  facet_wrap(~year, scales = "free_y") +
-  theme_classic(base_size = 14) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  labs(x = "GHMI",
-       y = "Number of Observations",
-       title = "Frequency of Observations Across GHMI Bins by Year")
-
-# Plot it with years stacked
-ggplot(obs_over_GHMI, aes(x = GHMI_bin, y = obs, fill = factor(year))) +
-  geom_col(color = "white") +
-  theme_classic(base_size = 14) +
-  labs(x = "GHMI",
-       y = "Number of Observations",
-       fill = "Year",
-       title = "Frequency of Observations Across GHMI Bins by Year")
-
-# Line plot 
-ggplot(obs_over_GHMI, aes(x = GHMI_bin, y = obs, group = year, color = factor(year))) +
-  geom_line() +
-  geom_point() +
-  theme_classic(base_size = 14) +
-  labs(x = "GHMI",
-       y = "Number of Observations",
-       color = "Year",
-       title = "Distribution of Observations Across GHMI Bins by Year")
-
-
-
-
-
-
-
-
-############################################## Figure 27: Map of temperature across grid cells of 
-# Bioregion NA24 
-
-
-#Plot it
-ggplot(grids_with_temp_and_precip) +
-  geom_sf(aes(fill = temp)) +
-  geom_sf(data = NA_24, color = NA, fill = NA) +
-  scale_fill_viridis_c(name = "Mean Temperature") +
-  theme_bw() +
-  labs(title = "Mean Temperature Across Bioregion NA24")+
-  theme_minimal(base_size = 14) +
-  theme(
-    panel.background = element_rect(fill = "transparent", color = NA),
-    plot.background = element_rect(fill = "transparent", color = NA),
-    legend.background = element_rect(fill = "transparent", color = NA),
-    legend.box.background = element_rect(fill = "transparent", color = NA),
-    axis.text = element_blank(),
-    axis.ticks = element_blank(),
-    panel.grid = element_blank(),
-    axis.title = element_blank()
-  )
 
 
 
@@ -983,7 +482,7 @@ ggplot(grids_with_temp_and_precip) +
 
 
 ########################################################################################################################
-### Figure 28: map of United States with Bioregion NA24 for spatial context 
+### Figure 10: map of United States with Bioregion NA24 for spatial context 
 
 # Bounding box of the United States
 us_bbox <- st_as_sfc(st_bbox(c(
@@ -1030,7 +529,7 @@ ggsave(
 
 
 ########################################################################################################################
-### Figure 29: Satellite map of Bioregion NA24
+### Figure 11: Satellite map of Bioregion NA24
 
 
 # Set CRS

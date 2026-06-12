@@ -1,136 +1,33 @@
-###### The scripts for the pollinator phenology project should be run/read in the 
-#      order detailed below. 
+This repository contains all the code and files used in the analyses reported in "Proportion of native plants is a key predictor of pollinator richness in urban greenspaces" article, which is published in Urban Ecosystems.
 
+# Data Folder
 
-###### 1. create_grid_shapefiles_of_northeast.R
-#         Input = one_earth-bioregions-2023.geojson
-#         Output = 
-#                 a) NA24_gridded_map.geojson 
-#                 b) NA24_gridded_map.dbf
-#                 c) NA24_gridded_map.prj
-#                 d) NA24_gridded_map.shp
-#                 e) NA24_gridded_map.shx
-#                 f) NA_24_clipped.geojson
+This folder contains all data used in the analyses. The only datasets not included, due to storage limitations, are the raw iNaturalist data for the state of Florida and the full ParkServe dataset. The raw iNaturalist data was downloaded using the iNaturalist data export tool on June 26, 2025. However, we provide a filtered version of this dataset, which includes only the taxonomic groups of interest and observations classified as “Research Grade.” We additionally provide the filtered ParkServe greenspace boundaries to only include those located within urban areas in Florida. The following is a description of data present in this repository:
 
+**Dynamic_World_Habitat/dynamic_world_habitat_fl.csv** – A CSV file listing all urban parks in our study area and the percentage of each *Dynamic World* habitat class within those greenspaces. These percentages were calculated using Google Earth Engine. Specifically, we applied a pixel-based histogram reducer to count the number of 100 square-meter land cover pixels belonging to each habitat type and then calculated the percentage of each type relative to the total number of pixels within each polygon. **Dataset citation:** Brown, C. F., Brumby, S. P., Guzder-Williams, B., *et al.* (2022). *Dynamic World: Near real-time global 10 m land use land cover mapping.* *Scientific Data, 9*(251). <https://doi.org/10.1038/s41597-022-01307-4>
 
-###### 2. join_inaturalist_pollinators_with_grids.R
-#         Input = 
-#                 a) NA24_gridded_map.geojson
-#                 b) iNaturalist_pollinator_observations.rds
-#         Output = pollinators_joined_with_grids_5.rds
+**ParkServe/parks_in_urban_areas.shp** – Filtered ParkServe greenspace boundaries to only include those located within urban areas in Florida. The full ParkServe dataset is too large to store in this repository, but it can downloaded online. **Dataset citation:** Trust for Public Land (2025) ParkServe [database]. Land and People Lab. <https://tpl.org/parkserve>
 
+**Pollinator_and_Angiosperm_Data/all_nonnative_sp.csv** – A CSV file output from `1_prepare_data.R` which contains taxonomic information on all introduced angiosperm species in Florida.
 
-###### 3. Filtering Data for Phenological Estimates.R 
-#         Input = 
-#                 a) pollinators_joined_with_grids_5.rds
-#                 b) NA24_gridded_map.geojson
-#         Output = filtered_5.rds                                   first version, repeats below
+**Pollinator_and_Angiosperm_Data/florida_pollinators_and_angiosperms_taxon.RDS** – An RDS file containing all Research Grade iNaturalist observations of pollinators (Superfamily Apoidea, Family Bombyliidae, Subfamily Cetoniinae, Order Lepidoptera, and Subfamily Lepturinae) and angiosperm species in the state of Florida through June 26, 2025. This data was obtained using the iNaturalist data export tool, which was accessed on June 26, 2025.
 
+**Pollinator_and_Angiosperm_Data/species_richness_wide_fl.csv** – A CSV file output from `2_data_analysis.R` which contains pollinator and angiosperm richness values and number of iNaturalist observations per park for the 129 parks used in this study. This file was used to show trends in richness values and observation intensity in the `4_map_of_study_area_and_data_availablity.R` script.
 
-###### 4. Filtering Data for Phenological Estimates_up.R 
-#         Input = 
-#                 a) pollinators_joined_with_grids_5.rds
-#                 b) NA24_gridded_map.geojson
-#         Output = filtered_5_up.rds                               check why this repeats
+**Urban_Areas/Urban_areas.shp** – Shapefile containing boundaries of urban areas in Florida. This data was obtained from the U.S. Census Bureau. **Dataset Citation:** United States Census Bureau (2023) 2020 Census urban area TIGER/Line shapefiles. Retrieved September 2024. <https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html>
 
+# Figures Folder
 
-###### 5. Grid_Exploration.R 
-#         Input = 
-#                 a) filtered_5.rds
-#                 b) NA24_gridded_map.geojson
-#                 c) NA_24_clipped.geojson
-#         Output = 
-#                 a) number_species_per_grid.png                 double check 
+This folder contains all the main figures and supplemental figures presented in the article.
 
+# R Folder
 
-###### 6. Phenological_Estimates_by_grid_by_species.R 
-#         Input = filtered_5.csv
-#         Output = phenology_estimates_by_grid_by_species.RDS
+This folder contains 4 R scripts which can be used to repeat the results presented in the article and supplemental material. Below is a description of each script:
 
+**1_prepare_data** – This script defines urban greenspaces in Florida using the `ParkServe_Parks.shp` and `Urban_areas.shp` files, reads in raw iNaturalist data for the entire states, filters the data to include only the taxonomic groups of interest and "Research Grade" observations, and generates a list of non-native angiosperm species in Florida. The non-native species list was obtained on July 17, 2025. If this script is run in the future, it may produce a slightly different list as species are added to or removed from the list of introduced plants in Florida by the iNaturalist community.
 
-###### 7. link_GHMI_and_climate_to_grids.R
-#         Input = 
-#                 a) mean_gHM.csv
-#                 b) climate.csv
-#                 c) filtered_5_up.rds
-#         Output = 
-#                 a) climate_summarized.csv
-#                 b) filtered_5_with_GHMI.csv
+**2_data_analysis** – This script contains all the code used to analyze pollinator and angiosperm data from urban greenspaces in Florida to generate the main results presented in the article.
 
+**3_supplemental_analysis_by_subgroup** – This script contains all the code used to repeat the main analysis reported in the article for four subgroups - Apoidea, Lepidoptera, butterflies (Family Hesperiidae, Papilionidae, Pieridae, Lycaenidae, Riodinidae, and Nymphalidae), and moths (Lepidoptera and not family Hesperiidae, Papilionidae, Pieridae, Lycaenidae, Riodinidae, and Nymphalidae).
 
-
-###### 8. prepare_data_for_analysis.R
-#         Input = 
-#                 a) filtered_5.rds
-#                 a) filtered_5_with_GHMI.csv
-#                 b) phenology_estimates_by_grid_by_species.RDS
-#                 c) iNaturalist_pollinator_observations.rds
-#         Output = phenology_estimates_data_for_analysis.rds
-
-
-###### 9. Empirical_Data_Figures.R
-#         Input =
-#                a)  filtered_5.csv
-#                b)  filtered_5_with_GHMI.csv
-#                c)  NA24_gridded_map.geojson 
-#                d)  NA_24_clipped.geojson
-#                e)  phenology_estimates_data_for_analysis.rds
-#         Output = 
-#                 a) Lepidoptera_Observations_in_Low_and_High_GHMI.png 
-#                 b) Hymenoptera_Observations_in_Low_and_High_GHMI.png
-#                 c) Coleoptera_Observations_in_Low_and_High_GHMI
-#                 d) Diptera_Observations_in_Low_and_High_GHMI.png
-#                 e) map_of_species_per_grid_cell.png
-#                 f) map_of_species_per_grid_cell_centroids.png
-#                 g) map_of_observations_per_grid_cell.png
-#                 h) GHMI_map_of_Bioregion_NA24.png
-#                 i) distribution_of_GHMI_values_in_Bioregion_NA24.png
-#                 j) map_of_US_and_BioregionNA24.png
-#                 k) NA24_satellite_cutout.png
-
-
-###### 10. Phenology Figures.R
-#         Input =
-#                 a) final_phenology_df_for_analysis.RDS
-#                 b) gam_results_by_species_w_climate.csv
-#                 c) species_gam_full_w_climate.rds
-#         Output = 
-#                 a) slope_of_species_duration_plot_w_climate.png
-#                 b) slope_of_species_onset_plot_w_climate.png
-#                 c) slope_of_species_offset_plot_w_climate.png
-#                 d) combined_plot_phenology_slopes_of_all_species_w_climate.png
-#                 e) combined_plot_phenology_slopes_of_all_species_w_climate_solid_background.png
-#                 f) combined_plot_phenology_slopes_of_all_species_with_climate_PowerPoint_dimensions.png
-#                 g) duration_across_ghmi_for_6_species_w_climate.png
-#                 h) duration_across_ghmi_for_6_species_w_climate_solid_white_background.png
-#                 i) duration_across_ghmi_for_6_species_w_climate_PowerPoint_dimensions.png
-#                 j) onset_across_ghmi_for_10_species_w_climate.png
-#                 k) onset_across_ghmi_for_10_species_w_climate_solid_white_background.png
-#                 l) onset_across_ghmi_for_10_species_w_climate_PowerPoint_dimensions.png
-#                 m) offset_across_ghmi_for_12_species_w_climate.png
-#                 n) offset_across_ghmi_for_12_species_w_climate_solid_white_background.png
-#                 o) offset_across_ghmi_for_12_species_w_climate_PowePoint_dimensions.png
-
-
-
-###### 11. GAM_Analysis_GHMI.R
-#         Input = 
-#                 a) phenology_estimates_data_for_analysis.rds
-#                 b) Climate_Data/climate_summarized.csv
-#                 c) NA24_gridded_map.geojson
-#                 d) filtered_5.rds
-#         Output = 
-#                 a) final_phenology_df_for_analysis.RDS
-#                 b) distribution_of_GHMI_values_in_GAM_dataset.png
-#                 c) data_for_models_summary.csv
-#                 d) species_gam_full_w_climate.rds
-#                 e) gam_results_by_species_w_climate.csv
-#                 f) species_gam_significant_p_only_w_climate.csv
-#                 g) Average_Year_Sampling_Grid_Cell.jpeg
-#                 h) Observations_by_year.jpeg
-
-
-
-
-
-
+**4_map_of_study_area_and_data_availability** – This script is used to map the `species_richness_wide_fl.csv` data to show trends in richness values and observation intensity across urban greenspaces in Florida.

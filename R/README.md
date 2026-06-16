@@ -128,7 +128,7 @@
 
 ## 9. 09_Phenology Figures.R
 
-- I**nput**
+- **Input**
 
   - final_phenology_df_for_analysis.RDS
 

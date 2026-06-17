@@ -858,3 +858,68 @@ ggsave(
   height = 6,
   units = "in"
 )
+
+
+############################################## Supplemental Figure S3
+
+# Relationship between average year of observations per grid cell
+year_per_grid <- filtered_5 %>% 
+  group_by(grid_id) %>%
+  summarise(mean_year = mean(year))
+
+grids_year <- ggplot(year_per_grid, aes(x = mean_year)) +
+  geom_histogram(binwidth = 1, boundary = 0, color = "white", fill = "steelblue") +
+  scale_x_continuous(breaks = seq(min(filtered_5$year), max(filtered_5$year), by = 2)) +
+  labs(
+    x = "Year",
+    y = "Number of Grids",
+    title = "A) Number of grids by year"
+  ) +
+  theme_classic(base_size = 14)
+
+# simple observations by year
+obs_year <- ggplot(filtered_5, aes(x = year)) +
+  geom_histogram(binwidth = 1, boundary = 0, color = "white", fill = "steelblue") +
+  scale_x_continuous(breaks = seq(min(filtered_5$year), max(filtered_5$year), by = 2)) +
+  labs(
+    x = "Year",
+    y = "Number of Observations",
+    title = "B) Number of observations by year"
+  ) +
+  theme_classic(base_size = 14)
+
+filtered_5 <- left_join(filtered_5, GHMI, by="grid_id")
+
+summarized <- filtered_5 %>%
+  group_by(grid_id) %>%
+  summarise(mean_year = mean(year),
+            GHMI = mean(mean))
+
+year_grid <- ggplot(summarized, aes(x = mean_year, y = GHMI)) +
+  geom_point(
+    color = "grey30",
+    alpha = 0.8,
+    size = 2
+  ) +
+  labs(
+    title = "C) Comparison of GHMI by Mean Year per Grid",
+    x = "Mean Year per Grid",
+    y = "Mean GHMI"
+  ) +
+  theme_classic(base_size=14) 
+
+top_row <- plot_grid(
+  grids_year, obs_year,
+  ncol = 2
+)
+
+final_plot <- plot_grid(
+  top_row,
+  year_grid,
+  ncol = 1,
+  rel_heights = c(1, 1)
+)
+
+final_plot
+
+ggsave("Figures/Supplementary Figure 3.png", height=10, width=10, units="in")

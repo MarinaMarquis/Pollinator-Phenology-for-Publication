@@ -1,4 +1,4 @@
-# Making a data frame with mean GHMI value for each grid in the data set  
+# Making a data frame with mean GHMI and climate values for each grid in the data set  
 
 #############################################################################################################
 
@@ -11,7 +11,7 @@ library(tidyverse)
 # Read in data 
 GHMI <- read.csv("Data/Spatial Data/GHMI/mean_gHM.csv")
 climate <- read.csv("Data/Spatial Data/Climate_Data/climate.csv")
-filtered_grids_with_observations <- readRDS("Data/filtered_5_up.rds")
+filtered_grids_with_observations <- readRDS("Data/filtered_5.rds")
 
 
 #############################################################################################################
@@ -27,7 +27,7 @@ filtered_grids_with_observations <- filtered_grids_with_observations %>%
 
 merged_df <- merge(filtered_grids_with_observations, GHMI[, c("grid_id", "mean")], by = "grid_id", all.x = TRUE)
 
-# get average climatic values before merging data
+# Get average climatic values before merging data
 climate_summarized <- climate %>%
   group_by(grid_id) %>%
   summarise(
@@ -38,7 +38,7 @@ climate_summarized <- climate %>%
   ) %>%
   select(grid_id, temp, prcp)
 
-write.csv(climate_summarized, "Data/Spatial Data/Climate Data/climate_summarized.csv")
+write.csv(climate_summarized, "Data/Spatial Data/Climate_Data/climate_summarized.csv")
 
 merged_df_final <- merge(merged_df, climate_summarized, by = "grid_id", all.x = TRUE)
 

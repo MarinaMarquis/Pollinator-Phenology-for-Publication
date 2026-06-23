@@ -48,7 +48,7 @@ hist(fp_data$mean_GHMI)
 
 quantile(fp_data$mean_GHMI, p=c(0.05, 0.95))
 
-# resample so there is an even number of data per 0.2 inerval of GHMI index
+# resample so there is an even number of data per 0.2 interval of GHMI index
 
 # create GHMI bins
 fp_data_binned <- fp_data %>%

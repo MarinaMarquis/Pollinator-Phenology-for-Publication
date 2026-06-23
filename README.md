@@ -1,33 +1,131 @@
-This repository contains all the code and files used in the analyses reported in "Proportion of native plants is a key predictor of pollinator richness in urban greenspaces" article, which is published in Urban Ecosystems.
+This repository contains all the code and files used in the analyses reported in "Anthropogenic modification shifts pollinator phenology in the eastern United States" article, which is published in Royal Society Open Science.
 
 # Data Folder
 
-This folder contains all data used in the analyses. The only datasets not included, due to storage limitations, are the raw iNaturalist data for the state of Florida and the full ParkServe dataset. The raw iNaturalist data was downloaded using the iNaturalist data export tool on June 26, 2025. However, we provide a filtered version of this dataset, which includes only the taxonomic groups of interest and observations classified as “Research Grade.” We additionally provide the filtered ParkServe greenspace boundaries to only include those located within urban areas in Florida. The following is a description of data present in this repository:
+This folder contains all data used in the analyses. The only datasets not included are the satellite imagery data used to create Figure 1, as this data was pulled directly into the Empirical_Data.Figures.R script from ESRI World Imagery. The raw iNaturalist pollinator data was downloaded using a custom boundary of the eastern United States on August 6, 2025. However, we provide a filtered version of this dataset, which includes only "Research Grade" observations of the insect species that were verified as pollinators using a manual literature search of adult diets. We additionally provide the filtered NA_24_clipped.geojson boundaries to only include those located within One Earth Appalachia & Allegheny Interior Forests Bioregion (Bioregion NA24). The following is a description of data present in this repository:
 
-**Dynamic_World_Habitat/dynamic_world_habitat_fl.csv** – A CSV file listing all urban parks in our study area and the percentage of each *Dynamic World* habitat class within those greenspaces. These percentages were calculated using Google Earth Engine. Specifically, we applied a pixel-based histogram reducer to count the number of 100 square-meter land cover pixels belonging to each habitat type and then calculated the percentage of each type relative to the total number of pixels within each polygon. **Dataset citation:** Brown, C. F., Brumby, S. P., Guzder-Williams, B., *et al.* (2022). *Dynamic World: Near real-time global 10 m land use land cover mapping.* *Scientific Data, 9*(251). <https://doi.org/10.1038/s41597-022-01307-4>
+**Spatial Data/Climate_Data/climate.csv** – A CSV file
 
-**ParkServe/parks_in_urban_areas.shp** – Filtered ParkServe greenspace boundaries to only include those located within urban areas in Florida. The full ParkServe dataset is too large to store in this repository, but it can downloaded online. **Dataset citation:** Trust for Public Land (2025) ParkServe [database]. Land and People Lab. <https://tpl.org/parkserve>
+**Spatial Data/Climate_Data/climate_summarized.csv** – A CSV file
 
-**Pollinator_and_Angiosperm_Data/all_nonnative_sp.csv** – A CSV file output from `1_prepare_data.R` which contains taxonomic information on all introduced angiosperm species in Florida.
+**Spatial Data/ecoregion geojson/one_earth-bioregions-2023.geojson** – A geojson file containing all One Earth Bioregions.
 
-**Pollinator_and_Angiosperm_Data/florida_pollinators_and_angiosperms_taxon.RDS** – An RDS file containing all Research Grade iNaturalist observations of pollinators (Superfamily Apoidea, Family Bombyliidae, Subfamily Cetoniinae, Order Lepidoptera, and Subfamily Lepturinae) and angiosperm species in the state of Florida through June 26, 2025. This data was obtained using the iNaturalist data export tool, which was accessed on June 26, 2025.
+**Spatial Data/ecoregion geojson/NA_24_clipped.geojson** – A geojson file of Bioregion NA24 (a region spanning parts of the eastern United States).
 
-**Pollinator_and_Angiosperm_Data/species_richness_wide_fl.csv** – A CSV file output from `2_data_analysis.R` which contains pollinator and angiosperm richness values and number of iNaturalist observations per park for the 129 parks used in this study. This file was used to show trends in richness values and observation intensity in the `4_map_of_study_area_and_data_availablity.R` script.
+**Spatial Data/GHMI/mean_gHM.csv** – A CSV file containing the average GHMI (Global Human Modification Index) number for each 5 x 5 km grid cell in Bioregion NA24.
 
-**Urban_Areas/Urban_areas.shp** – Shapefile containing boundaries of urban areas in Florida. This data was obtained from the U.S. Census Bureau. **Dataset Citation:** United States Census Bureau (2023) 2020 Census urban area TIGER/Line shapefiles. Retrieved September 2024. <https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html>
+**Spatial Data/gridded map of NA24 region/NA24_gridded_map.geojson** – A geojson file of Bioregion NA24 (a region spanning parts of the eastern United States), with the region divided into 5 x 5 km grid cells.
+
+**Spatial Data/Population_Density/mean_pop_density.csv** – A CSV file
+
+**iNaturalist_pollinator_observations.rds** – An RDS file containing all iNaturalist insect observations within the orders Coleoptera, Diptera, Hymenoptera, and Lepidoptera observed in the eastern United States in the years 2008-2024.
+
+**pollinators_joined_with_grids_5.RDS** – An RDS file containing all iNaturalist insect observations within the orders Coleoptera, Diptera, Hymenoptera, and Lepidoptera observed in Bioregion NA24 2008-2024. All insect observations are linked to the 5 x 5 km grid cell within this Bioregion where they were observed.
+
+**filtered_5.rds** – An rds file containing all insect pollinator observations, filtered to only include species that were defined as pollinators from a manual literature search of adult diets, and to only include species with at least ten observations per 5 x 5 km grid cell.
+
+**Phenology Data/phenology_estimates_by_grid_by_species.RDS** – An RDS file containing estimates of the onset, offset, and total duration of season for each pollinator species in each 5 x 5 km grid cell of Bioregion NA24 that met our filtering criteria.
+
+**filtered_5_with_GHMI.csv** – A CSV file containing mean GHMI, precipitation, and temperature for each 5 x 5 km grid cell in Bioregion NA24.
+
+**phenology_estimates_data_for_analysis.rds** – An RDS file containing onset, offset, and duration of each species in each grid cell in Bioregion NA24 that met filtering criteria, as well as the mean GHMI, precipitation, temperature of each grid cell. This data frame was filtered to only include pollinator species that were found in at least 20 grids and to exclude phenology estimates that exceeded 365 day of year.
+
+**final_phenology_df_for_analysis.RDS** – An RDS file containing onset, offset, and duration of each species in each grid cell in Bioregion NA24 that met filtering criteria, as well as the mean GHMI, precipitation, temperature of each grid cell. This data frame was filtered to exclude species with a GHMI range less than 0.3 and a GHMI standard deviation less than 0.10.
+
+**data_for_models_summary.csv** – A CSV file that summarizes the pollinator species used in the GAMs, the number of grid cells that each species has, the number of observations for each species, and the range of GHMI values across all grid cells for each species.
+
+**observations_with_landsat_variables.rds** – An RDS file containing the raw data of pollinator observations and GHMI value of each grid cell in the data set used for analysis.
+
+**GAM_results/species_gam_full_w_climate.rds** – An RDS file containing the full model outputs from Species-Specific models that include climate variables (temperature and precipitation) and GHMI as the anthropogenic modification predictor.
+
+**GAM_results/species_gam_full_pop_den.rds** – An RDS file containing the full model outputs from Species-Specific models that include climate variables (temperature and precipitation) and population density as the anthropogenic modification predictor.
+
+**GAM_results/gam_results_by_species.csv** – A CSV file
+
+**GAM_results/gam_results_by_species_w_climate.csv** – A CSV file containing a summary of the model outputs from Species-Specific models that include climate variables (temperature and precipitation) and GHMI as the anthropogenic modification predictor.
+
+**GAM_results/gam_results_by_species_pop.den.csv** – A CSV file containing a summary of the model outputs from Species-Specific models that include climate variables (temperature and precipitation) and population density as the anthropogenic modification predictor.
+
+**GAM_results/species_gam_significant_p_only_w_climate.csv** – A CSV file containing the model outputs from Species-Specific models with GHMI as the anthropogenic modification predictor, filtered to only include results for species that showed GHMI significantly influenced at least one phenological estimate (based on p-value \< 0.05).
+
+**GAM_results/species_gam_significant_p_only_pop_den.csv** – A CSV file containing the model outputs from Species-Specific models with GHMI as the anthropogenic modification predictor, filtered to only include results for species that showed GHMI significantly influenced at least one phenological estimate (based on p-value \< 0.05).
+
+**phenology_estimates_sample_subset.RDS** – An RDS file containing the onset, offset, and total duration of season for the top 10 most abundant species in Bioregion NA24. Estimates were obtained from pollinator observations from the years 2012-2020.
+
+**phenology_estimates_of_top_ten_species_for_2012_to_2020.RDS** – An RDS file containing the onset, offset, and total duration of season for the top 10 most abundant species in Bioregion NA24, filtered to include only species x grid combos used in GAMs. Estimates were obtained from pollinator observations from the years 2012-2020.
+
+**phenology_estimates_of_top_ten_species_for_all_years.RDS** – An RDS file containing the onset, offset, and total duration of season for the top 10 most abundant species in Bioregion NA24, filtered to include only species x grid combos used in GAMs. Estimates were obtained from pollinator observations from the years 2008 - 2024.
 
 # Figures Folder
 
-This folder contains all the main figures and supplemental figures presented in the article.
+This folder contains all the main figures and the supplemental figures and tables presented in the article, listed below:
+
+-   Figure 1 png.png
+
+-   Figure 2 png.png
+
+-   Figure 3.png
+
+-   Figure 4.png
+
+-   Supplementary Figure 1.jpeg
+
+-   Supplementary Figure 2.jpg
+
+-   Supplementary Figure 3.jpg
+
+-   Supplementary Figure 4.jpeg
+
+-   Supplementary Figure 5.jpg
+
+-   Supplementary Figure 6.png
+
+-   Supplementary Figure 7.png
+
+-   Supplementary Figure 8.png
+
+-   Supplementary Figure 9.png
+
+-   Supplementary Figure 10.png
+
+-   Supplementary Table 1.docx
+
+-   Supplementary Table 2.docx
+
+-   Supplementary Table 3.docx
 
 # R Folder
 
-This folder contains 4 R scripts which can be used to repeat the results presented in the article and supplemental material. Below is a description of each script:
+This folder contains 16 R scripts which can be used to repeat the results presented in the article and supplemental material. Below is a description of each script:
 
-**1_prepare_data** – This script defines urban greenspaces in Florida using the `ParkServe_Parks.shp` and `Urban_areas.shp` files, reads in raw iNaturalist data for the entire states, filters the data to include only the taxonomic groups of interest and "Research Grade" observations, and generates a list of non-native angiosperm species in Florida. The non-native species list was obtained on July 17, 2025. If this script is run in the future, it may produce a slightly different list as species are added to or removed from the list of introduced plants in Florida by the iNaturalist community.
+**01_create_grid_shapefiles_of_northeast.R** – This script defines Bioregion NA24 from the `one_earth-bioregions-2023.geojson` file to produce the clipped `NA_24_clipped.geojson` file and creates a gridded map of Bioregion NA24 ( `NA24_gridded_map.geojson` ) with the region divided into 5 x 5 km grid cells.
 
-**2_data_analysis** – This script contains all the code used to analyze pollinator and angiosperm data from urban greenspaces in Florida to generate the main results presented in the article.
+**02_join_inaturalist_pollinators_with_grids.R** – This script joins the GBIF download of iNaturalist pollinator observations (`iNaturalist_pollinator_observations.rds`) with the gridded map of Bioregion NA24 (`NA24_gridded_map.geojson`) so that each pollinator observation is linked to the Bioregion NA24 grid that it was observed in. The resulting data frame is `pollinators_joined_with_grids_5.rds`.
 
-**3_supplemental_analysis_by_subgroup** – This script contains all the code used to repeat the main analysis reported in the article for four subgroups - Apoidea, Lepidoptera, butterflies (Family Hesperiidae, Papilionidae, Pieridae, Lycaenidae, Riodinidae, and Nymphalidae), and moths (Lepidoptera and not family Hesperiidae, Papilionidae, Pieridae, Lycaenidae, Riodinidae, and Nymphalidae).
+**03_Filtering Data for Phenological Estimates.R** – This script filters the `pollinators_joined_with_grids_5.rds` data set to only include insect species defined as a pollinator from a manual literature search (contains functional mouth parts as an adult and eats the reproductive parts of flowers as an adult). This script also filters the data set to include only insect pollinator species with at least 10 observations per 5 x 5 km grid cell in Bioregion NA24.
 
-**4_map_of_study_area_and_data_availability** – This script is used to map the `species_richness_wide_fl.csv` data to show trends in richness values and observation intensity across urban greenspaces in Florida.
+**04_Grid_Exploration.R** – This script is used to summarize the grid-level pollinator data.
+
+**05_Phenological_Estimates_by_grid_by_species.R** – This script creates a function to use a Weibull probability distribution to estimate the onset, median, offset, and total duration of season for each pollinator species in each grid of Bioregion NA24. Onset, offset, and duration are used as phenological estimates going forward.
+
+**06_link_GHMI_and_climate_to_grids.R** – This script creates a data frame with the mean GHMI, temperature, and precipitation in each 5 x 5 km grid cell of Bioregion NA24.
+
+**07_prepare_data_for_analysis.R** – This script prepares the phenology data for GAM models. Climate, geographic, and human change variables are added to the grid-level phenology estimates (phenology estimates for each species in each grid), so that each grid contains the phenology estimates of all pollinator species observed there, and mean temperature, precipitation, GHMI, latitude, and longitude. This data set is then filtered to only include species that are A) found in at least 20 grids, and B) contain GHMI values across grid cells with a range greater than 0.3 and a standard deviation greater than 0.10. Lastly, the script explores phenological estimates that exceed 365 days of year, determines that they are not indicative of larger biases with the phenology estimate methods, and removes these skewed estimates from the data set. This script produces Table 1.
+
+**08_Empirical_Data_Figures.R** – This script prepares the main text and supplementary figures produced using empirical data (not phenology data). This script produces the complete or components of the following figures: Figure 1, Figure 2, Figure S4, Figure S7, Figure S8, and Figure S3.
+
+**09_GAM_Analysis_GHMI.R** – In this script, GAMs are constructed to measure the influence of GHMI on phenology estimates for individual species (Species-Specific Models) and across species in Bioregion NA24 (Regional-Level Models). This script produces Table 2 and Table S3.
+
+**10_Phenology Figures.R** – In this script, phenology data is used to produced the following figures: Figure 3, Part B of Figure S2, Figure S10, Figure 4, and Figure S9.
+
+**Supplemental_Analyses/Supplementary Distribution of GHMI values Per Year.R** – This script shows the distribution of GHMI values for each year in the data set. It produces Figure S6.
+
+**Supplemental_Analyses/Supplementary Phenology Exploration.R** – This script tests whether sampling effort in certain years influenced our phenology estimates of species. In this script, a sub-sample of observations of the 10 most abundant species in the data set is taken and used to estimate their onset, offset, and total duration of activity for the years 2012-2020. This is compared to the phenological estimates obtained from observations of the same 10 species from the years 2009-2024. This script produces Figure S5.
+
+**Supplemental_Analyses/supp_spatial_resampling_GHMI_values.R** – In this script, phenology data is subsampled so that there is an even number of data per 0.2 interval of GHMI index. This subsampled data set is then used for Regional-Level Model GAMs and compared to the results of GAMs with data that is not subsampled. This is done to assess whether the spatial bias towards human-modified areas is affecting the GAM results.
+
+**Supplemental_Analyses/GAM_Analysis_Population_Density.R** – This script re-runs all of the GAMs produced in the **09_GAM_Analysis_GHMI.R** script with a population density rather than GHMI as a response variable. This was done to assess the extent to which GHMI mirrors urbanization in its relationship to phenology.
+
+**Supplemental_Analyses/Compare_GHMI_and_Pop_Den.R** – In this script, the effect of population density versus anthropogenic modification (GHMI) on phenology estimates to assess the extent to which GHMI mirrors urbanization in its relationship to phenology. This script produces Figure S1 and Part A of Figure S2.
+
+**Supplemental_Analyses/GAM_Analysis_GHMI_2012_2020.R** – This script re-runs all of the GAMs produced in the **09_GAM_Analysis_GHMI.R** script with a phenology data obtained from observations spanning the years 2012-2020. This was done to assess whether temporal bias was influencing GAM results.

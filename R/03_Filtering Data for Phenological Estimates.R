@@ -40,7 +40,10 @@ sum(is.na(pollinators_grids_clean$species))
 # eat as adults) or that we cannot determine to be pollinators due to a lack of information on their adult
 # feeding habits in current literature. See manuscript for full details on how this was decided.
 
-unique(pollinators_grids_clean$species) #get list of species: 7,045 species before filtering  
+unique(pollinators_grids_clean$species)
+length(unique(pollinators_grids_clean$species))#get list of species: 7,045 species before filtering  
+
+# Now filter
 filtered_5 <- pollinators_grids_clean %>%
   filter(species != "Actias luna",
          species != "Eacles imperialis",

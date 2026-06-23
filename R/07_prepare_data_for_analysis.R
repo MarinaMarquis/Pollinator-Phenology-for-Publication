@@ -15,8 +15,9 @@ library(ggplot2)
 
 # Read in data  
 filtered_5 <- readRDS("Data/filtered_5.rds") #observations used to make phenology estimates 
-filtered_5_with_landsat <- read.csv("Data/filtered_5_with_GHMI.csv") # mean GHMI for each grid 
-phenology_estimates_all_species_each_grid <- readRDS('Data/Phenology Data/phenology_estimates_by_grid_by_species.RDS') #Phenology 
+filtered_5_with_landsat <- read.csv("Data/filtered_5_with_GHMI.csv") # mean GHMI, precip, and temp for each grid 
+phenology_estimates_all_species_each_grid <- readRDS('Data/Phenology Data/phenology_estimates_by_grid_by_species.RDS') #Phenology
+five_km_grids <- st_read("Data/Spatial Data/gridded map of NA24 region/NA24_gridded_map.geojson") #geoJSON of gridded map of Bioregion NA24
 #estimates for each species in each grid 
 taxonomy <- readRDS("Data/iNaturalist_pollinator_observations.rds") %>%
   dplyr::select(species, genus, family, order) %>%
@@ -25,14 +26,15 @@ taxonomy <- readRDS("Data/iNaturalist_pollinator_observations.rds") %>%
 #############################################################################################################
 
 ### Merge phenology_estimates_all_species_each_grid with filtered_5_with_landsat so that 
-#   the data frame with phenology estimates of each species in each grid also has mean GHMI for each grid
+#   the data frame with phenology estimates of each species in each grid also has 
+#   mean GHMI, precip, and temp for each grid
 
-# Merge them into one data set with observations and mean GHMI per grid: 
+# Merge them into one data set with observations and mean GHMI, precipitation, 
+# and temperature per grid: 
 phenology_estimates_all_species_each_grid_with_GHMI <- phenology_estimates_all_species_each_grid %>%
   left_join(filtered_5_with_landsat %>%
-              select(grid_id, mean_GHMI = mean), by = c("grid" = "grid_id")) %>%
-  left_join(., taxonomy, by="species")
-
+      select(grid_id, mean_GHMI = mean, temp, prcp), by = c("grid" = "grid_id")) %>%
+  left_join(taxonomy, by = "species")
 
 # Filter to include only species that are found in at least twenty grids
 phenology_estimates_all_species_each_grid_with_GHMI <- phenology_estimates_all_species_each_grid_with_GHMI %>%
@@ -59,7 +61,9 @@ unique(phenology_estimates_all_species_each_grid_with_GHMI$species)
 
 
 #Removing species that aren't pollinators or that we cannot determine to be pollinators (because 
-#there is insufficient peer-reviewed information on their diet) using the species in the filtered_5 dataset
+#there is insufficient peer-reviewed information on their diet) using the species in the filtered_5 dataset. 
+#This is just a cautionary step to make sure this species list matches the one
+#we were using from our manual literature search. 
 phenology_estimates_all_species_each_grid_with_GHMI <- phenology_estimates_all_species_each_grid_with_GHMI %>%
   filter(species %in% filtered_5$species)
 
@@ -227,11 +231,154 @@ grid_per_spec <- phenology_filtered %>%
 grid_per_spec #Papilio glaucus found in most grids (386 grids)
 
 
-
-#############################################################################################################
-
 #Save it: 
 saveRDS(phenology_filtered, "Data/phenology_estimates_data_for_analysis.rds") 
+
+#############################################################################################################
+### Explore other variables 
+
+# Now get the mean latitude and longitude for each grid
+grids_centroids <- five_km_grids %>%
+  st_centroid() %>%                                 
+  mutate(lon = st_coordinates(.)[, 1],             
+         lat = st_coordinates(.)[, 2]) %>%        
+  st_drop_geometry() %>%                            
+  select(grid_id, lon, lat) %>%
+  group_by(grid_id) %>%
+  summarise(lon = first(lon),
+            lat = first(lat),
+            .groups = "drop")
+
+# Now add the mean lon and lat to our phenology_filtered
+phenology_filtered <- left_join(phenology_filtered, grids_centroids, by=c("grid"="grid_id"))%>%
+  mutate(species = as.factor(species))
+
+
+
+########################################################################################################### 
+### Let's explore the range of GHMI values in the data set: 
+
+summary(fp_rel$mean_GHMI)
+sd(fp_rel$mean_GHMI)
+
+# Plot it
+ggplot(fp_rel, aes(x = mean_GHMI)) +
+  geom_histogram(bins = 30, fill = "steelblue", color = "white") +
+  theme_classic() +
+  labs(x = "Mean GHMI", y = "Count",
+       title = "Distribution of GHMI in the data set")
+# Looks like there is some skew towards higher GHMI values in the data set 
+
+# Summarize by species 
+fp_data_summary <- phenology_filtered %>%
+  group_by(species) %>%
+  summarise(min_GHMI = min(mean_GHMI, na.rm = TRUE),
+            max_GHMI = max(mean_GHMI, na.rm = TRUE),
+            n = n()) %>%
+  arrange(min_GHMI) %>%
+  print(n = 50)
+
+
+# Flagging all species with narrow GHMI ranges 
+check_species <- function(df) {
+  m <- gam(duration ~ s(mean_GHMI, k = min(5, length(unique(df$mean_GHMI)))),
+           data = df, method = "REML")
+  tibble(
+    n = nrow(df),
+    range = diff(range(df$mean_GHMI)),
+    sd = sd(df$mean_GHMI),
+    edf = summary(m)$edf[1]  
+  )
+}
+results <- phenology_filtered %>% group_by(species) %>% group_modify(~check_species(.x))
+print(results, n=107)
+
+
+# Removing species with a range less than 0.3 and a standard deviation less than 0.10 so that they
+# can be properly fitted to GAMs
+flagged_species <- results %>%
+  filter(range < 0.3 | sd < 0.1)
+phenology_filtered <- phenology_filtered %>%
+  filter(!species %in% flagged_species$species)
+
+summary(phenology_filtered$mean_GHMI)
+sd(phenology_filtered$mean_GHMI)
+
+# Save it 
+saveRDS(phenology_filtered, "Data/final_phenology_df_for_analysis.RDS")
+
+########################################################################################################### 
+### Summarize data after final levels of filtering 
+
+# Table 1: Produce a table summarizing the species being used in the GAMs, the number of grid cells that 
+# each species has, the number of observations for each species, and the range of GHMI values 
+# across all grid cells for each species 
+data_for_models_summary <- phenology_filtered %>%
+  group_by(species) %>%
+  summarise(
+    n_grid_cells = n_distinct(grid),
+    min_GHMI = min(mean_GHMI, na.rm = TRUE),
+    max_GHMI = max(mean_GHMI, na.rm = TRUE),
+    GHMI_range = max_GHMI - min_GHMI,
+    .groups = "drop"
+  ) %>%
+  arrange(desc(n_grid_cells))%>%
+  mutate(across(c(min_GHMI, max_GHMI, GHMI_range), ~round(.x, 3))) %>%
+  arrange(desc(n_grid_cells))%>%
+  print()
+
+# Export to CSV 
+write.csv(data_for_models_summary, "Data/data_for_models_summary.csv")
+
+### Look at the make-up of our data after this final level of filtering: 
+#Look at new species and grids  
+length(unique(phenology_filtered$species)) #52 species 
+length(unique(phenology_filtered$family)) #20 families  
+length(unique(phenology_filtered$order)) #4 orders 
+length(unique(phenology_filtered$grid)) #756 grids 
+species_per_order <- phenology_filtered %>%
+  group_by(order) %>%
+  summarise(n_species = n_distinct(species)) %>%
+  arrange(desc(n_species))%>%
+  print()
+
+
+# Also want to know how many pollinator observations we ended up using in this study
+obs_used <- filtered_5 %>%  #filter raw observation data to only include grid/species combos used in fp_data
+  semi_join(phenology_filtered, by = c("species" = "species", "grid_id" = "grid"))
+
+n_obs_used <- nrow(obs_used) # Total # of obs used to produce phenology estimates that we actually
+#used for the GAMs
+n_obs_used   #83012
+
+# Per species
+obs_used_per_species <- obs_used %>%
+  count(species, name = "n_obs")%>%
+  print()
+
+# Per species × grid cell
+obs_used_per_sp_grid <- obs_used %>%
+  count(species, grid_id, name = "n_obs")%>%
+  print()
+
+# Distribution of climatic variables used in the models 
+
+# From our df, get the GHMI, temp, and precip of each GHMI so we can look at their ranges 
+# and averages 
+variable_summaries <- phenology_filtered %>%
+  select(grid, prcp, temp, mean_GHMI)%>%
+  distinct(grid, prcp, temp, mean_GHMI)
+sum(duplicated(variable_summaries$grid)) #make sure it worked 
+
+range(variable_summaries$temp) # temp ranged from 6.984389 to 18.213873 C
+mean(variable_summaries$temp) # avg temp is 13.57113 C
+sd(variable_summaries$temp) # temp has a standard deviation of 2.643663
+range(variable_summaries$prcp) # prcp ranged from around 2.490541 5.978967 mm 
+mean(variable_summaries$prcp) #average of 3.759373 mm of precip 
+sd(variable_summaries$prcp) # prcp has a standard deviation of 0.5650605
+range(variable_summaries$mean_GHMI) # GHMI ranged from 0.0002226816 to 0.9191919168
+mean(variable_summaries$mean_GHMI) #average GHMI of 0.4998607
+sd(variable_summaries$mean_GHMI) #GHMI has a standard deviation of 0.2025444
 
 
 

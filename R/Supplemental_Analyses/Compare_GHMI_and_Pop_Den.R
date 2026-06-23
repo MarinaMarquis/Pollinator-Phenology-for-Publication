@@ -10,7 +10,7 @@ species_gam_pop <- read.csv("Data/GAM_results/gam_results_by_species_pop_den.csv
 
 colnames(species_gam_ghmi)
 
-# plot with and without climte
+# plot with and without climate
 # combine the data frames to compare estimates
 estimates <- left_join(species_gam %>% select(model, species, GHMI_estimate), 
                        species_gam_ghmi %>% select(model, species, GHMI_estimate) %>% rename(GHMI_estimate_climate = GHMI_estimate), 

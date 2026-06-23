@@ -1,4 +1,8 @@
-################# This script shows the distibution of GHMI values for each year in the data set
+################# This script shows the distribution of GHMI values for each year in the data set
+
+################# Load packages 
+library(ggplot2)
+library(dplyr)
 
 
 ################# Read in the data
@@ -6,9 +10,19 @@ observations_with_landsat_variables <- readRDS("Data/observations_with_landsat_v
 #raw data of observations, GHMI, and grid cell. Filtered to only include 
 #observations of species that will be used for analysis 
 
-################# Load packages 
-library(ggplot2)
+fp_data <- readRDS("Data/final_phenology_df_for_analysis.RDS")
+#the FINAL data frame that was used for in the GAMs so that our raw data can be matched to the
+#species x grid combinations that were actually used for analysis
 
+
+#Valid species x grid combinations that were used for analysis
+valid_combos <- fp_data %>%
+  select(species, grid) %>%
+  distinct()
+
+# Filter data set to match the species x grid combos used for analysis 
+observations_with_landsat_variables <- observations_with_landsat_variables %>%
+  inner_join(valid_combos, by = c("species" = "species","grid_id" = "grid"))
 
 
 #################

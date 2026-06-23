@@ -417,7 +417,7 @@ ggsave("Figures/duration_across_ghmi_for_6_species_w_climate_PowerPoint_dimensio
 
 
 
-######## Figure 3: Onset values across a range of GHMI values for 10 species 
+######## Figure 4: Onset values across a range of GHMI values for 10 species 
 
 
 # Species lists by phenology estimate 

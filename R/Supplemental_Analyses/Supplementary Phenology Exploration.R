@@ -3,7 +3,7 @@
 # We want to know whether sampling effort in certain years influenced our phenology
 # estimates of species. This is because our data set ranges from 2009, when iNaturalist
 # first launched, to 2024, when it was more widely used. In this script, we take a sub-sample
-# of the 10 most abundance species in our data set and estimate their onset, offset, and
+# of the 10 most abundant species in our data set and estimate their onset, offset, and
 # total duration of activity for the years 2012-2020. We will then compare this to the
 # phenological estimates we obtained from them using 2009-2024 observation data. 
 
@@ -186,6 +186,8 @@ subset_top <- subset_top %>%
 # Combine data sets 
 combined_df <- bind_rows(full_top, subset_top)
 
+
+### Figure S5: 
 # Plot it: onset 
 ggplot(combined_df, aes(x = mean_GHMI, y = onset, color = dataset)) +
   geom_point(alpha = 0.6) +

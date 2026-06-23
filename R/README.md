@@ -1,199 +1,83 @@
-# The scripts should be run/read in the order detailed below.
+### The scripts should be run/read in the order detailed below.
 
-## 1. 01_create_grid_shapefiles_of_northeast.R
+1.) 01_create_grid_shapefiles_of_northeast.R
 
-- **Input** = one_earth-bioregions-2023.geojson
+2.) 02_join_inaturalist_pollinators_with_grids.R
 
-- **Outputs**
+3.) 03_Filtering Data for Phenological Estimates.R
 
-  - NA24_gridded_map.geojson
+4.) 04_Grid_Exploration.R
 
-  - NA24_gridded_map.dbf
+5.) 05_Phenological_Estimates_by_grid_by_species.R
 
-  - NA24_gridded_map.prj
+6.) 06_link_GHMI_and_climate_to_grids.R
 
-  - NA24_gridded_map.shp
+7.) 07_prepare_data_for_analysis.R
 
-  - NA24_gridded_map.shx
+-   Table Produced:
 
-  - NA_24_clipped.geojson
+    -   Table 1: `data_for_models_summary.csv`
 
-## 2. 02_join_inaturalist_pollinators_with_grids.R
+8.) 08_Empirical_Data_Figures.R
 
-- **Input**
+-   Figures Produced:
 
-  - NA24_gridded_map.geojson
+    -   Figure 1: `map_of_species_per_grid_cell.png`, `Bombus_impatiens_observations_across_grids_sat.png`, `Papilio_glaucus_observations_across_grids.png`, `Xylocopa_virginica_observations_across_grids_sat.png`, and `map_of_US_and_BioregionNA24.png`
 
-  - iNaturalist_pollinator_observations.rds
+    -   Figure 2: `map_of_species_per_grid_cell.png`
 
-- **Output** = pollinators_joined_with_grids_5.rds
+    -   Figure S4: `Change_in_Pop_Den_by_Year.jpeg`
 
-## 3. 03_Filtering Data for Phenological Estimates.R
+    -   Figure S7: `distribution_of_GHMI_values_in_Bioregion_NA24.png` and `distribution_of_GHMI_values_in_GAM_dataset.png`
 
-- **Input**
+    -   Figure S8: `Lepidoptera_Observations_in_Low_and_High_GHMI.png`, `Hymenoptera_Observations_in_Low_and_High_GHMI.png`, `Coleoptera_Observations_in_Low_and_High_GHMI.png`, and `Diptera_Observations_in_Low_and_High_GHMI.png`
 
-  - pollinators_joined_with_grids_5.rds
+    -   Figure S3: `Supplementary Figure 3.png`
 
-  - NA24_gridded_map.geojson
+9) 09_GAM_Analysis_GHMI.R
 
-- **Output** = filtered_5.rds first version, repeats below
+-   Tables Produced:
 
-## 4. 04_Grid_Exploration.R
+    -   Table 2: `species_gam_significant_p_only_w_climate.csv`
 
-- **Input**
+    -   Table S3: `gam_results_by_species_w_climate.csv`
 
-  - filtered_5.rds
+10) 10_Phenology Figures.R
 
-  - NA24_gridded_map.geojson
+-   Figures Produced:
 
-  - NA_24_clipped.geojson
+    -   Figure 3: `combined_plot_phenology_slopes_of_all_species_with_climate_PowerPoint_dimensions.png`
 
-- **Output**
+        -   This figure was also used for Part B of Figure S2.
 
-  - number_species_per_grid.png double check
+    -   Figure S10: `duration_across_ghmi_for_6_species_w_climate_PowerPoint_dimensions.png`
 
-## 5. 05_Phenological_Estimates_by_grid_by_species.R
+    -   Figure 4: `onset_across_ghmi_for_10_species_w_climate_PowerPoint_dimensions.png`
 
-- **Input** = filtered_5.csv
+    -   Figure S9: `offset_across_ghmi_for_12_species_w_climate_PowePoint_dimensions.png`
 
-- **Output** = phenology_estimates_by_grid_by_species.RDS
+11) Supplementary Distribution of GHMI values Per Year.R
 
-## 6. 06_link_GHMI_and_climate_to_grids.R
+-   Figures Produced:
 
-- **Input**
+    -   Figure S6: `Supplementary Figure 6.png`
 
-  - mean_gHM.csv
+12) Supplementary Phenology Exploration.R
 
-  - climate.csv
+-   Figures Produced:
 
-  - filtered_5_up.rds
+    -   Figure S5: `subset_versus_full_data_onset_over_GHMI_10_species.png`, `subset_versus_full_data_offset_over_GHMI_10_species.png`, and `subset_versus_full_data_total_duration_over_GHMI_10_species.png`
 
-- **Output**
+13) supp_spatial_resampling_GHMI_values.R
 
-  - climate_summarized.csv
+14) GAM_Analysis_Population_Density.R
 
-  - filtered_5_with_GHMI.csv
+15) Compare_GHMI_and_Pop_Den.R
 
-## 7. 07_prepare_data_for_analysis.R
+-   Figures Produced:
 
-- **Input**
+    -   Figure S1: `pop_den_vs_ghmi_slope.jpeg`
 
-  - filtered_5.rds
+    -   Figure S2 (A): `combined_plot_phenology_slopes_of_all_species_pop_den.png`
 
-  - filtered_5_with_GHMI.csv
-
-  - phenology_estimates_by_grid_by_species.RDS
-
-  - iNaturalist_pollinator_observations.rds
-
-- **Output** = phenology_estimates_data_for_analysis.rds
-
-## 8. 08_Empirical_Data_Figures.R
-
-- **Input**
-
-  - filtered_5.csv
-
-  - filtered_5_with_GHMI.csv
-
-  - NA24_gridded_map.geojson
-
-  - NA_24_clipped.geojson
-
-  - phenology_estimates_data_for_analysis.rds
-
-- **Output**
-
-  - Lepidoptera_Observations_in_Low_and_High_GHMI.png
-
-  - Hymenoptera_Observations_in_Low_and_High_GHMI.png
-
-  - Coleoptera_Observations_in_Low_and_High_GHMI
-
-  - Diptera_Observations_in_Low_and_High_GHMI.png
-
-  - map_of_species_per_grid_cell.png
-
-  - map_of_species_per_grid_cell_centroids.png
-
-  - map_of_observations_per_grid_cell.png
-
-  - GHMI_map_of_Bioregion_NA24.png
-
-  - distribution_of_GHMI_values_in_Bioregion_NA24.png
-
-  - map_of_US_and_BioregionNA24.png
-
-  - NA24_satellite_cutout.png
-
-## 9. 09_Phenology Figures.R
-
-- **Input**
-
-  - final_phenology_df_for_analysis.RDS
-
-  - gam_results_by_species_w_climate.csv
-
-  - species_gam_full_w_climate.rds
-
-- **Output**
-
-  - slope_of_species_duration_plot_w_climate.png
-
-  - slope_of_species_onset_plot_w_climate.png
-
-  - slope_of_species_offset_plot_w_climate.png
-
-  - combined_plot_phenology_slopes_of_all_species_w_climate.png
-
-  - combined_plot_phenology_slopes_of_all_species_w_climate_solid_background.png
-
-  - combined_plot_phenology_slopes_of_all_species_with_climate_PowerPoint_dimensions.png
-
-  - duration_across_ghmi_for_6_species_w_climate.png
-
-  - duration_across_ghmi_for_6_species_w_climate_solid_white_background.png
-
-  - duration_across_ghmi_for_6_species_w_climate_PowerPoint_dimensions.png
-
-  - onset_across_ghmi_for_10_species_w_climate.png
-
-  - onset_across_ghmi_for_10_species_w_climate_solid_white_background.png
-
-  - onset_across_ghmi_for_10_species_w_climate_PowerPoint_dimensions.png
-
-  - offset_across_ghmi_for_12_species_w_climate.png
-
-  - offset_across_ghmi_for_12_species_w_climate_solid_white_background.png
-
-  - offset_across_ghmi_for_12_species_w_climate_PowePoint_dimensions.png
-
-## 10. 10_GAM_Analysis_GHMI.R
-
-- **Input**
-
-  - phenology_estimates_data_for_analysis.rds
-
-  - Climate_Data/climate_summarized.csv
-
-  - NA24_gridded_map.geojson
-
-  - filtered_5.rds
-
-- **Output**
-
-  - final_phenology_df_for_analysis.RDS
-
-  - distribution_of_GHMI_values_in_GAM_dataset.png
-
-  - data_for_models_summary.csv
-
-  - species_gam_full_w_climate.rds
-
-  - gam_results_by_species_w_climate.csv
-
-  - species_gam_significant_p_only_w_climate.csv
-
-  - Average_Year_Sampling_Grid_Cell.jpeg
-
-  - Observations_by_year.jpeg
+16) GAM_Analysis_GHMI_2012_2020.R

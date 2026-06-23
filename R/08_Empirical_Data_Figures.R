@@ -25,9 +25,7 @@ grids_5 <- st_read("Data/Spatial Data/gridded map of NA24 region/NA24_gridded_ma
 NA_24 <- st_read("Data/Spatial Data/ecoregion geojson/NA_24_clipped.geojson") #map of bioregion NA24 (no grids)
 fp_data <- readRDS("Data/final_phenology_df_for_analysis.RDS")
 GHMI <- read.csv("Data/Spatial Data/GHMI/mean_gHM.csv")
-climate <- read.csv("Data/Spatial Data/Climate_Data/climate_summarized.csv")
 pop_den <- read.csv("Data/Spatial Data/Population_Density/mean_pop_density.csv")
-fp_data <- readRDS("Data/final_phenology_df_for_analysis.RDS")
 
 #Merge them into one data set with observations and GHMI: 
 observations_with_landsat_variables <- filtered_5 %>%
@@ -167,8 +165,8 @@ ggsave("Figures/map_of_species_per_grid_cell.png", width=6.27, height=6.27, unit
 # create bounding box to use as an example
 bbox <- c(xmin = -84.8, ymin = 33.02802, xmax = -83.5, ymax = 34.60635)
 
-#We will use the top 4 species with the most observations as example species. Listing them for filtering here:
-example_species <- c("Bombus impatiens", "Papilio glaucus", "Xylocopa virginica", "Apis mellifera")
+#We will use 3 species with abundant observations as example species. Listing them for filtering here:
+example_species <- c("Bombus impatiens", "Papilio glaucus", "Xylocopa virginica")
 
 #Summarize for each species, how many observations are found in each grid
 obs_per_spec <- observations_with_landsat_variables %>%
@@ -182,8 +180,8 @@ grid_with_obs_count_per_species <- grids_5 %>%
   left_join(obs_per_spec, by = "grid_id")%>%
   filter(species %in% example_species & !is.na(obs_n))  # filter out NA rows
 
-#Plot observations count (across Bioregion NA24 grids) of each of the following species: Bombus impatiens, Papilio glaucus,
-#Xylocopa virginica, and Apis mellifera
+#Plot observations count (across Bioregion NA24 grids) of each of the following 
+#species: Bombus impatiens, Papilio glaucus, and Xylocopa virginica
 
 
 #Bombus impatiens
@@ -281,35 +279,6 @@ ggRGB(sat_map, r = 1, g = 2, b = 3) +
   )
 ggsave("Figures/Xylocopa_virginica_observations_across_grids_sat.png", width = 2.07, height = 2.07, units = "in", bg = "transparent")
 
-#Apis mellifera
-Apis_mellifera <- grid_with_obs_count_per_species %>%
-  filter(species == "Apis mellifera")
-
-# Get extent 
-bbox_sfc <- st_as_sfc(st_bbox(bbox, crs = st_crs(Apis_mellifera)))
-Apis_mellifera_cropped <- st_crop(Apis_mellifera, bbox_sfc)
-
-ggRGB(sat_map, r = 1, g = 2, b = 3) +
-  geom_sf(data= Apis_mellifera_cropped, aes(fill = log10(obs_n)), color = NA) +
-  scale_fill_viridis_c(option = "plasma", na.value = NA) +
-  labs(
-    title = "Number of Apis mellifera\nObservations per Grid Cell",
-    fill = "log10(Count)",
-    x = NULL,
-    y = NULL
-  ) +
-  theme_minimal(base_size = 8) +
-  theme(
-    panel.background = element_rect(fill = "transparent", color = NA),
-    plot.background = element_rect(fill = "transparent", color = NA),
-    legend.background = element_rect(fill = "transparent", color = NA),
-    legend.box.background = element_rect(fill = "transparent", color = NA),
-    axis.text = element_blank(),
-    axis.ticks = element_blank(),
-    panel.grid = element_blank(),
-    axis.title = element_blank()
-  )
-ggsave("Figures/Apis_mellifera_observations_across_grids_sat.png", width = 2.07, height = 2.07, units = "in", bg = "transparent")
 
 # map of United States with Bioregion NA24 for spatial context 
 
@@ -348,97 +317,29 @@ ggsave(
 )
 
 
-############################################## Map of Bioregion NA24 with number of observations in 
-###############                                each grid cell 
+############################################## Figure 2: Map of Bioregion NA24 with number of 
+###############                                species in each grid cell. This map
+###############                                is used in Figure 2. 
 
 
-
-#Summarize number of observations in each grid cell 
-obs_num <- observations_with_landsat_variables %>%
-  count(grid_id, name = "obs_n")
-
-#Join with grids_5 to obtain the geometry column associated with unique grids 
-grid_with_obs_count <- grids_5 %>%
-  left_join(obs_num, by = "grid_id")
-
-#Plot it 
-ggplot()+
-  geom_sf(data=grid_with_obs_count, aes(fill=log10(obs_n)), color = NA)+ #add grids without grid outline 
-  geom_sf(data = NA_24, color = "black", fill = NA, linewidth = 0.8) +
-  coord_sf(expand = FALSE) +
-  scale_fill_viridis_c(option = "plasma", na.value = NA) +  # leave cells with no species number white 
-  labs(
-    title = "Number of Observations per Grid Cell",
-    fill = "log10(Pollinator Observation Count)",
-    x = NULL,
-    y = NULL
-  )+
-  theme_minimal(base_size = 14) +
-  theme(
-    panel.background = element_rect(fill = "transparent", color = NA),
-    plot.background = element_rect(fill = "transparent", color = NA),
-    legend.background = element_rect(fill = "transparent", color = NA),
-    legend.box.background = element_rect(fill = "transparent", color = NA),
-    axis.text = element_blank(),
-    axis.ticks = element_blank(),
-    panel.grid = element_blank(),
-    axis.title = element_blank(), 
-    legend.title = element_text(size = 12),  
-    legend.text = element_text(size = 10)
-  )
-
-
-ggsave("Figures/map_of_observations_per_grid_cell.png", width=6, height=6, units="in")
-
-
-
-
-############################################## Map of GHMI across grid cells of Bioregion NA24 
-#Make GHMI dataframe into an sf object
-GHMI_merged <- grids_5 %>%
-  left_join(GHMI, by = "grid_id")
-
-#Plot it
-(ghmi_plot <- ggplot(GHMI_merged) +
-    geom_sf(aes(fill = mean), color = NA) +
-    geom_sf(data = NA_24, color = NA, fill = NA) +
-    scale_fill_viridis_c(name = "Mean GHMI") +
-    theme_bw() +
-    labs(title = "Anthropogenic Change Across\nBioregion NA24 (GHMI)")+
-    theme_minimal(base_size = 14) +
-    theme(
-      panel.background = element_rect(fill = "transparent", color = NA),
-      plot.background = element_rect(fill = "transparent", color = NA),
-      legend.background = element_rect(fill = "transparent", color = NA),
-      legend.box.background = element_rect(fill = "transparent", color = NA),
-      axis.text = element_blank(),
-      axis.ticks = element_blank(),
-      panel.grid = element_blank(),
-      axis.title = element_blank()
-    ))
-
-ggsave("Figures/GHMI_map_of_Bioregion_NA24.png", width=6, height=6, units="in")
-
-
-############################################## Figure 2: Map of Bioregion NA24 with number of species in each grid 
-###############                                cell
 
 #Summarize number of species in each grid cell 
 species_num <- observations_with_landsat_variables %>%
-  group_by (grid_id)%>%
+  group_by(grid_id) %>%
   summarise(species_n = n_distinct(species))
 
 #Join with grids_5 to obtain the geometry column associated with unique grids 
-grid_with_species <- grids_5 %>%
+grid_with_species_count <- grids_5 %>%
   left_join(species_num, by = "grid_id")
 
 #Plot it 
 ggplot()+
-  geom_sf(data=grid_with_species, aes(fill=log10(species_n)), color = NA)+ #add grids without grid outline 
-  geom_sf(data = NA_24, color = "black", fill = NA, linewidth = 0.8) + 
-  scale_fill_viridis_c(option = "plasma", na.value = NA) +  # leave cells with no species number white 
+  geom_sf(data=grid_with_species_count, aes(fill=log10(species_n)), color = NA)+ #add grids without grid outline 
+  geom_sf(data = NA_24, color = "black", fill = NA, linewidth = 0.8) +
+  coord_sf(expand = FALSE) +
+  scale_fill_viridis_c(option = "plasma", na.value = NA, 
+                       breaks = c(0, 0.5, 1.0, 1.5)) +  # leave cells with no species number white 
   labs(
-    title = "Number of Species per Grid Cell",
     fill = "log10(Species Count)",
     x = NULL,
     y = NULL
@@ -457,65 +358,15 @@ ggplot()+
     legend.text = element_text(size = 10)
   )
 
+
 ggsave("Figures/map_of_species_per_grid_cell.png", width=6, height=6, units="in")
 
 
-# alternative log transformation
-ggplot()+
-  geom_sf(data=grid_with_species, aes(fill=species_n), color = NA)+ #add grids without grid outline 
-  geom_sf(data = NA_24, color = "black", fill = NA, linewidth = 0.8) + 
-  scale_fill_viridis_c(option = "plasma", na.value = NA, trans="log10") +  # leave cells with no species number white 
-  theme_bw()+
-  labs(
-    title = "Number of Species per Grid Cell",
-    fill = "log10(Species Count)",
-    x = NULL,
-    y = NULL
-  )+
-  theme_minimal(base_size = 14) +
-  theme(
-    panel.background = element_rect(fill = "transparent", color = NA),
-    plot.background = element_rect(fill = "transparent", color = NA),
-    legend.background = element_rect(fill = "transparent", color = NA),
-    legend.box.background = element_rect(fill = "transparent", color = NA),
-    axis.text = element_blank(),
-    axis.ticks = element_blank(),
-    panel.grid = element_blank(),
-    axis.title = element_blank()
-  )
-
-grid_points <- grid_with_species %>%
-  st_centroid()
-
-ggplot() +
-  geom_sf(data = grid_points, aes(color = log10(species_n)), size = 2) +  # Use color instead of fill
-  geom_sf(data = NA_24, color = "black", fill = NA, linewidth = 0.8) + 
-  scale_color_viridis_c(option = "plasma", na.value = NA) +
-  theme_minimal(base_size = 14) +
-  labs(
-    title = "Number of Species per Grid Cell (Centroids)",
-    color = "log10(Species Count)",
-    x = NULL,
-    y = NULL
-  ) +
-  theme(
-    panel.background = element_rect(fill = "transparent", color = NA),
-    plot.background = element_rect(fill = "transparent", color = NA),
-    legend.background = element_rect(fill = "transparent", color = NA),
-    legend.box.background = element_rect(fill = "transparent", color = NA),
-    axis.text = element_blank(),
-    axis.ticks = element_blank(),
-    panel.grid = element_blank(),
-    axis.title = element_blank()
-  )
-
-ggsave("Figures/map_of_species_per_grid_cell_centroids.png", width=6, height=6, units="in")
 
 
 
-
-
-############################################## Figure S4: Examine change in population over time by grid cell
+############################################## Figure S4: Examine change 
+#                                   in population over time by grid cell
 
 pop_den_long <- pop_den %>%
   pivot_longer(
@@ -771,96 +622,10 @@ ggsave("Figures/Diptera_Observations_in_Low_and_High_GHMI.png", width=5.28, heig
 
 
 
-############################################## Figure of temperature and precipitation
-
-temp_prcp <- grids_5 %>%
-  left_join(climate %>% select(grid_id, temp, prcp), by = "grid_id") 
-
-(temp_plot <- ggplot(temp_prcp) +
-    geom_sf(aes(fill = temp), color = NA) +
-    geom_sf(data = NA_24, color = NA, fill = NA) +
-    scale_fill_viridis_c(name = "Mean Daily\nTemperature (°C)") +
-    theme_bw() +
-    labs(title = "Mean Daily Temperature\nAcross Bioregion NA24")+
-    theme_minimal(base_size = 14) +
-    theme(
-      panel.background = element_rect(fill = "transparent", color = NA),
-      plot.background = element_rect(fill = "transparent", color = NA),
-      legend.background = element_rect(fill = "transparent", color = NA),
-      legend.box.background = element_rect(fill = "transparent", color = NA),
-      axis.text = element_blank(),
-      axis.ticks = element_blank(),
-      panel.grid = element_blank(),
-      axis.title = element_blank()
-    ))
-
-(prcp_plot <- ggplot(temp_prcp) +
-    geom_sf(aes(fill = prcp), color = NA) +
-    geom_sf(data = NA_24, color = NA, fill = NA) +
-    scale_fill_viridis_c(name = "Mean Daily\nPrecipitation (mm)") +
-    theme_bw() +
-    labs(title = "Mean Daily Precipitation\nAcross Bioregion NA24")+
-    theme_minimal(base_size = 14) +
-    theme(
-      panel.background = element_rect(fill = "transparent", color = NA),
-      plot.background = element_rect(fill = "transparent", color = NA),
-      legend.background = element_rect(fill = "transparent", color = NA),
-      legend.box.background = element_rect(fill = "transparent", color = NA),
-      axis.text = element_blank(),
-      axis.ticks = element_blank(),
-      panel.grid = element_blank(),
-      axis.title = element_blank()
-    ))
-
-temp_and_prcp_plot <- temp_plot + prcp_plot
-temp_and_prcp_plot
-
-ggsave(
-  "Figures/Temperature_and_Precipitation_Plot.png",
-  plot = temp_and_prcp_plot,
-  width = 8,
-  height = 6,
-  units = "in"
-)
-
-############################################## Figure of population density
-
-GHMI_pop <- grids_5 %>%
-  left_join(pop_den %>% select(grid_id, pop_den_2010, pop_den_2015, pop_den_2020), by = "grid_id") %>%
-  left_join(GHMI %>% select(grid_id, mean), by = "grid_id")
-
-cor(GHMI_pop$mean, GHMI_pop$pop_den_2020, use = "complete.obs")
-
-(pop_den_plot <- ggplot(GHMI_pop) +
-    geom_sf(aes(fill = pop_den_2020), color = NA) +
-    geom_sf(data = NA_24, color = NA, fill = NA) +
-    scale_fill_viridis_c(name = "Mean Population\nDensity") +
-    theme_bw() +
-    labs(title = "Population Density\nAcross Bioregion NA24")+
-    theme_minimal(base_size = 14) +
-    theme(
-      panel.background = element_rect(fill = "transparent", color = NA),
-      plot.background = element_rect(fill = "transparent", color = NA),
-      legend.background = element_rect(fill = "transparent", color = NA),
-      legend.box.background = element_rect(fill = "transparent", color = NA),
-      axis.text = element_blank(),
-      axis.ticks = element_blank(),
-      panel.grid = element_blank(),
-      axis.title = element_blank()
-    ))
-
-combined_plot <- ghmi_plot + pop_den_plot
-
-ggsave(
-  "Figures/GHMI_vs_Pop_Density_Bioregion_NA24.png",
-  plot = combined_plot,
-  width = 8,
-  height = 6,
-  units = "in"
-)
 
 
-############################################## Supplemental Figure S3
+
+############################################## Figure S3
 
 # Relationship between average year of observations per grid cell
 year_per_grid <- filtered_5 %>% 

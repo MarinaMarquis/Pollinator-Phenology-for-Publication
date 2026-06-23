@@ -2,11 +2,11 @@ This repository contains all the code and files used in the analyses reported in
 
 # Data Folder
 
-This folder contains all data used in the analyses. The only datasets not included are the satellite imagery data used to create Figure 1, as this data was pulled directly into the Empirical_Data.Figures.R script from ESRI World Imagery. The raw iNaturalist pollinator data was downloaded using a custom boundary of the eastern United States on August 6, 2025. However, we provide a filtered version of this dataset, which includes only "Research Grade" observations of the insect species that were verified as pollinators using a manual literature search of adult diets. We additionally provide the filtered NA_24_clipped.geojson boundaries to only include those located within One Earth Appalachia & Allegheny Interior Forests Bioregion (Bioregion NA24). The following is a description of data present in this repository:
+This folder contains all data used in the analyses. The only datasets not included are the satellite imagery data used to create Figure 1, as this data was pulled directly into the `08_Empirical_Data_Figures.R` script from ESRI World Imagery. The raw iNaturalist pollinator data was downloaded using a custom boundary of the eastern United States on August 6, 2025. The full raw dataset is too large to share on GitHub, but see <https://doi.org/10.15468/dl.7dxq94>. We do provide a filtered version of this dataset in this repository, which includes only "Research Grade" observations of the insect species that were verified as pollinators using a manual literature search of adult diets. We additionally provide the filtered NA_24_clipped.geojson boundaries to only include those located within One Earth Appalachia & Allegheny Interior Forests Bioregion (Bioregion NA24). The following is a description of data present in this repository:
 
-**Spatial Data/Climate_Data/climate.csv** – A CSV file
+**Spatial Data/Climate_Data/climate.csv** – A CSV file containing mean daily minimum and maximum temperature and precipitation for each grid cell in Bioregion NA24. This data was obtained from Daymet V4 (Thornton et al. 2022) and was summarized in Google Earth Engine. Citation: Thornton, M.M., R. Shrestha, Y. Wei, P.E. Thornton, S-C. Kao, and B.E. Wilson. (2022). Daymet: Daily Surface Weather Data on a 1-km Grid for North America, Version 4 R1. ORNL DAAC, Oak Ridge, Tennessee, USA. <https://doi.org/10.3334/ORNLDAAC/2129>
 
-**Spatial Data/Climate_Data/climate_summarized.csv** – A CSV file
+**Spatial Data/Climate_Data/climate_summarized.csv** – A CSV file that is an export of `06_link_GHMI_and_climate_to_grids.R`. This file contains the summarized climatic variables by grid cell which was used in the main analysis.
 
 **Spatial Data/ecoregion geojson/one_earth-bioregions-2023.geojson** – A geojson file containing all One Earth Bioregions.
 
@@ -16,7 +16,7 @@ This folder contains all data used in the analyses. The only datasets not includ
 
 **Spatial Data/gridded map of NA24 region/NA24_gridded_map.geojson** – A geojson file of Bioregion NA24 (a region spanning parts of the eastern United States), with the region divided into 5 x 5 km grid cells.
 
-**Spatial Data/Population_Density/mean_pop_density.csv** – A CSV file
+**Spatial Data/Population_Density/mean_pop_density.csv** – A CSV file containing the mean population density in 2000, 2005, 2010, 2015, and 2020 of each grid cell in Bioregion NA24. This data was obtained from the gridded population of the world version 4.11 dataset (CIESIN 2018) and was summarized in Google Earth Engine. Citation: [CIESIN] Center for International Earth Science Information Network - Columbia University. (2018). Gridded Population of the World, Version 4 (GPWv4): Population Density, Revision 11. Palisades, NY: NASA Socioeconomic Data and Applications Center (SEDAC). <https://doi.org/10.7927/H49C6VHW>. Accessed 31 Mar 2026.
 
 **iNaturalist_pollinator_observations.rds** – An RDS file containing all iNaturalist insect observations within the orders Coleoptera, Diptera, Hymenoptera, and Lepidoptera observed in the eastern United States in the years 2008-2024.
 
@@ -36,19 +36,21 @@ This folder contains all data used in the analyses. The only datasets not includ
 
 **observations_with_landsat_variables.rds** – An RDS file containing the raw data of pollinator observations and GHMI value of each grid cell in the data set used for analysis.
 
+**GAM_results/species_gam_full.rds** – An RDS file containing the full model outputs from Species-Specific models GHMI as the anthropogenic modification predictor.
+
 **GAM_results/species_gam_full_w_climate.rds** – An RDS file containing the full model outputs from Species-Specific models that include climate variables (temperature and precipitation) and GHMI as the anthropogenic modification predictor.
 
 **GAM_results/species_gam_full_pop_den.rds** – An RDS file containing the full model outputs from Species-Specific models that include climate variables (temperature and precipitation) and population density as the anthropogenic modification predictor.
 
-**GAM_results/gam_results_by_species.csv** – A CSV file
+**GAM_results/gam_results_by_species.csv** – A CSV file containing a summary of the model outputs from Species-Specific models and GHMI as the anthropogenic modification predictor. These results are compared to the gam_results_by_species_w_climate.csv to determine if climatic variables improve models.
 
 **GAM_results/gam_results_by_species_w_climate.csv** – A CSV file containing a summary of the model outputs from Species-Specific models that include climate variables (temperature and precipitation) and GHMI as the anthropogenic modification predictor.
 
 **GAM_results/gam_results_by_species_pop.den.csv** – A CSV file containing a summary of the model outputs from Species-Specific models that include climate variables (temperature and precipitation) and population density as the anthropogenic modification predictor.
 
-**GAM_results/species_gam_significant_p_only_w_climate.csv** – A CSV file containing the model outputs from Species-Specific models with GHMI as the anthropogenic modification predictor, filtered to only include results for species that showed GHMI significantly influenced at least one phenological estimate (based on p-value \< 0.05).
+**GAM_results/species_gam_significant_p_only_w_climate.csv** – A CSV file containing the model outputs from Species-Specific models with GHMI as the anthropogenic modification and climatic variables as predictors, filtered to only include results for species that showed GHMI significantly influenced at least one phenological estimate (based on p-value \< 0.05).
 
-**GAM_results/species_gam_significant_p_only_pop_den.csv** – A CSV file containing the model outputs from Species-Specific models with GHMI as the anthropogenic modification predictor, filtered to only include results for species that showed GHMI significantly influenced at least one phenological estimate (based on p-value \< 0.05).
+**GAM_results/species_gam_significant_p_only_pop_den.csv** – A CSV file containing the model outputs from Species-Specific models with population density as the predictor, filtered to only include results for species that showed GHMI significantly influenced at least one phenological estimate (based on p-value \< 0.05).
 
 **phenology_estimates_sample_subset.RDS** – An RDS file containing the onset, offset, and total duration of season for the top 10 most abundant species in Bioregion NA24. Estimates were obtained from pollinator observations from the years 2012-2020.
 
@@ -60,39 +62,39 @@ This folder contains all data used in the analyses. The only datasets not includ
 
 This folder contains all the main figures and the supplemental figures and tables presented in the article, listed below:
 
--   Figure 1 png.png
+- Figure 1.png
 
--   Figure 2 png.png
+- Figure 2.png
 
--   Figure 3.png
+- Figure 3.png
 
--   Figure 4.png
+- Figure 4.png
 
--   Supplementary Figure 1.jpeg
+- Supplementary Figure 1.jpeg
 
--   Supplementary Figure 2.jpg
+- Supplementary Figure 2.jpg
 
--   Supplementary Figure 3.jpg
+- Supplementary Figure 3.jpg
 
--   Supplementary Figure 4.jpeg
+- Supplementary Figure 4.jpeg
 
--   Supplementary Figure 5.jpg
+- Supplementary Figure 5.jpg
 
--   Supplementary Figure 6.png
+- Supplementary Figure 6.png
 
--   Supplementary Figure 7.png
+- Supplementary Figure 7.png
 
--   Supplementary Figure 8.png
+- Supplementary Figure 8.png
 
--   Supplementary Figure 9.png
+- Supplementary Figure 9.png
 
--   Supplementary Figure 10.png
+- Supplementary Figure 10.png
 
--   Supplementary Table 1.docx
+- Supplementary Table 1.docx
 
--   Supplementary Table 2.docx
+- Supplementary Table 2.docx
 
--   Supplementary Table 3.docx
+- Supplementary Table 3.docx
 
 # R Folder
 
@@ -124,8 +126,8 @@ This folder contains 16 R scripts which can be used to repeat the results presen
 
 **Supplemental_Analyses/supp_spatial_resampling_GHMI_values.R** – In this script, phenology data is subsampled so that there is an even number of data per 0.2 interval of GHMI index. This subsampled data set is then used for Regional-Level Model GAMs and compared to the results of GAMs with data that is not subsampled. This is done to assess whether the spatial bias towards human-modified areas is affecting the GAM results.
 
-**Supplemental_Analyses/GAM_Analysis_Population_Density.R** – This script re-runs all of the GAMs produced in the **09_GAM_Analysis_GHMI.R** script with a population density rather than GHMI as a response variable. This was done to assess the extent to which GHMI mirrors urbanization in its relationship to phenology.
+**Supplemental_Analyses/GAM_Analysis_Population_Density.R** – This script re-runs all of the GAMs produced in the `09_GAM_Analysis_GHMI.R` script with a population density rather than GHMI as a response variable. This was done to assess the extent to which GHMI mirrors urbanization in its relationship to phenology.
 
 **Supplemental_Analyses/Compare_GHMI_and_Pop_Den.R** – In this script, the effect of population density versus anthropogenic modification (GHMI) on phenology estimates to assess the extent to which GHMI mirrors urbanization in its relationship to phenology. This script produces Figure S1 and Part A of Figure S2.
 
-**Supplemental_Analyses/GAM_Analysis_GHMI_2012_2020.R** – This script re-runs all of the GAMs produced in the **09_GAM_Analysis_GHMI.R** script with a phenology data obtained from observations spanning the years 2012-2020. This was done to assess whether temporal bias was influencing GAM results.
+**Supplemental_Analyses/GAM_Analysis_GHMI_2012_2020.R** – This script re-runs all of the GAMs produced in the `09_GAM_Analysis_GHMI.R` script with a phenology data obtained from observations spanning the years 2012-2020. This was done to assess whether temporal bias was influencing GAM results.

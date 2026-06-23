@@ -703,3 +703,132 @@ length(unique(species_gam_significant_p_only$species[species_gam_significant_p_o
 length(unique(species_gam_significant_p_only$species[species_gam_significant_p_only$model=="offset"])) #12 sig. for offset
 length(unique(species_gam_significant_p_only$species[species_gam_significant_p_only$model=="duration"])) #6 sig. for duration 
 
+
+# Repeat GAM models without climatic variables ----------------------
+
+# as a supplemental analysis, we will rerun GAM models without climate variables to determine their influence
+
+gam_by_species <- function(species_name){
+  
+  # filter the fp_data to that species
+  fp_data_sp <- fp_data %>%
+    filter(species == species_name)
+  
+  # pull taxonomic info (assumes order, family, genus are consistent per species)
+  tax_info <- fp_data_sp %>%
+    distinct(order, family, genus, species) %>%
+    slice(1)
+  
+  # define k value
+  k_val <- 20
+  
+  ### duration ###
+  gam_null_dur <- gam(duration ~ 1 + s(lat, lon, k = k_val, bs="tp"), 
+                      family = gaussian(), method = "REML", data=fp_data_sp)
+  gam_ghmi_dur <- gam(duration ~ mean_GHMI + s(lat, lon, k = k_val, bs="tp"), 
+                      family = gaussian(), method = "REML", data=fp_data_sp)
+  sum_gam_null_dur <- summary(gam_null_dur)
+  sum_gam_ghmi_dur <- summary(gam_ghmi_dur)
+  pval_spatial_dur <- sum_gam_ghmi_dur$s.table["s(lat,lon)", "p-value"]
+  
+  aic_val_dur <- c(AICc(gam_null_dur), AICc(gam_ghmi_dur))
+  delta_aic_dur <- aic_val_dur - min(aic_val_dur)
+  weights_dur <- exp(-0.5 * delta_aic_dur) / sum(exp(-0.5 * delta_aic_dur))
+  
+  ### onset ###
+  gam_null_on <- gam(onset ~ 1 + s(lat, lon, k = k_val, bs="tp"), 
+                     family = gaussian(), method = "REML", data=fp_data_sp)
+  gam_ghmi_on <- gam(onset ~ mean_GHMI + s(lat, lon, k = k_val, bs="tp"), 
+                     family = gaussian(), method = "REML", data=fp_data_sp)
+  sum_gam_null_on <- summary(gam_null_on)
+  sum_gam_ghmi_on <- summary(gam_ghmi_on)
+  pval_spatial_on <- sum_gam_ghmi_on$s.table["s(lat,lon)", "p-value"]
+  
+  aic_val_on <- c(AICc(gam_null_on), AICc(gam_ghmi_on))
+  delta_aic_on <- aic_val_on - min(aic_val_on)
+  weights_on <- exp(-0.5 * delta_aic_on) / sum(exp(-0.5 * delta_aic_on))
+  
+  ### offset ###
+  gam_null_off <- gam(offset ~ 1 + s(lat, lon, k = k_val, bs="tp"), 
+                      family = gaussian(), method = "REML", data=fp_data_sp)
+  gam_ghmi_off <- gam(offset ~ mean_GHMI + s(lat, lon, k = k_val, bs="tp"), 
+                      family = gaussian(), method = "REML", data=fp_data_sp)
+  sum_gam_null_off <- summary(gam_null_off)
+  sum_gam_ghmi_off <- summary(gam_ghmi_off)
+  pval_spatial_off <- sum_gam_ghmi_off$s.table["s(lat,lon)", "p-value"]
+  
+  aic_val_off <- c(AICc(gam_null_off), AICc(gam_ghmi_off))
+  delta_aic_off <- aic_val_off - min(aic_val_off)
+  weights_off <- exp(-0.5 * delta_aic_off) / sum(exp(-0.5 * delta_aic_off))
+  
+  ### summary table ###
+  gam_table <- data.frame(
+    order = tax_info$order,
+    family = tax_info$family,
+    genus = tax_info$genus,
+    species = tax_info$species,
+    model = c("duration", "onset", "offset"),
+    GHMI_estimate = c(sum_gam_ghmi_dur$p.table["mean_GHMI", "Estimate"],
+                      sum_gam_ghmi_on$p.table["mean_GHMI", "Estimate"],
+                      sum_gam_ghmi_off$p.table["mean_GHMI", "Estimate"]),
+    GHMI_se = c(sum_gam_ghmi_dur$p.table["mean_GHMI", "Std. Error"],
+                sum_gam_ghmi_on$p.table["mean_GHMI", "Std. Error"],
+                sum_gam_ghmi_off$p.table["mean_GHMI", "Std. Error"]),
+    GHMI_tval = c(sum_gam_ghmi_dur$p.table["mean_GHMI", "t value"],
+                  sum_gam_ghmi_on$p.table["mean_GHMI", "t value"],
+                  sum_gam_ghmi_off$p.table["mean_GHMI", "t value"]),
+    GHMI_pval = c(sum_gam_ghmi_dur$p.table["mean_GHMI", "Pr(>|t|)"],
+                  sum_gam_ghmi_on$p.table["mean_GHMI", "Pr(>|t|)"],
+                  sum_gam_ghmi_off$p.table["mean_GHMI", "Pr(>|t|)"]),
+    adj_r2 = c(sum_gam_ghmi_dur$r.sq,
+               sum_gam_ghmi_on$r.sq,
+               sum_gam_ghmi_off$r.sq),
+    dev_exp = c(sum_gam_ghmi_dur$dev.expl,
+                sum_gam_ghmi_on$dev.expl,
+                sum_gam_ghmi_off$dev.expl),
+    dev_exp_diff_comp_null = c(sum_gam_ghmi_dur$dev.expl - sum_gam_null_dur$dev.expl,
+                               sum_gam_ghmi_on$dev.expl - sum_gam_null_on$dev.expl,
+                               sum_gam_ghmi_off$dev.expl - sum_gam_null_off$dev.expl),
+    sample_size = c(sum_gam_ghmi_dur$n,
+                    sum_gam_ghmi_on$n,
+                    sum_gam_ghmi_off$n),
+    model_weight_comp_null = c(weights_dur[2],
+                               weights_on[2],
+                               weights_off[2]),
+    spatial_pval = c(pval_spatial_dur, pval_spatial_on, pval_spatial_off), 
+    delta_AIC = c(delta_aic_dur[2],
+                  delta_aic_on[2],
+                  delta_aic_off[2])
+  )
+  
+  return(list(
+    summary_table = gam_table,
+    models = list(
+      duration = gam_ghmi_dur,
+      onset = gam_ghmi_on,
+      offset = gam_ghmi_off
+    )
+  ))
+}
+
+
+# Get list of species 
+count_sp <- fp_data %>%
+  group_by(species) %>%
+  summarise(count=n()) %>%
+  arrange(desc(count))
+species_list <- as.vector(count_sp[!count_sp$count<6,]$species)
+
+# Now use the function to get model outputs for all species
+species_gam_full <- setNames(lapply(species_list, gam_by_species), species_list)
+
+# Save for use in other scripts
+saveRDS(species_gam_full, "Data/GAM_results/species_gam_full.rds")
+
+# Extract summary tables into a single dataframe
+species_gam <- bind_rows(lapply(species_gam_full, function(x) x$summary_table))
+
+# Save it 
+write_csv(species_gam, "Data/GAM_results/gam_results_by_species.csv")
+
+

@@ -8,17 +8,17 @@ This folder contains all data used in the analyses. The only datasets not includ
 
 **Spatial Data/Climate_Data/climate_summarized.csv** – A CSV file that is an export of `06_link_GHMI_and_climate_to_grids.R`. This file contains the summarized climatic variables by grid cell which was used in the main analysis.
 
-**Spatial Data/ecoregion geojson/one_earth-bioregions-2023.geojson** – A geojson file containing all One Earth Bioregions.
+**Spatial Data/ecoregion geojson/one_earth-bioregions-2023.geojson** – A geojson file containing all One Earth Bioregions. Citation: One Earth (2020). One Earth Bioregions. One Earth. <https://www.oneearth.org/bioregions-2023>
 
 **Spatial Data/ecoregion geojson/NA_24_clipped.geojson** – A geojson file of Bioregion NA24 (a region spanning parts of the eastern United States).
 
-**Spatial Data/GHMI/mean_gHM.csv** – A CSV file containing the average GHMI (Global Human Modification Index) number for each 5 x 5 km grid cell in Bioregion NA24.
+**Spatial Data/GHMI/mean_gHM.csv** – A CSV file containing the average GHMI (Global Human Modification Index) number for each 5 x 5 km grid cell in Bioregion NA24. This data was obtained from the Global Human Modification data set (gHM) and summarized in Google Earth Engine. Citation: Kennedy, C. M., Oakleaf, J. R., Theobald, D. M., Baruch-Murdo, S., & Kiesecker, J. (2019). Managing the middle: A shift in conservation priorities based on the global human modification gradient. Global Change Biology, 25(3), 811-826. <https://doi.org/10.1111/gcb.14549>
 
 **Spatial Data/gridded map of NA24 region/NA24_gridded_map.geojson** – A geojson file of Bioregion NA24 (a region spanning parts of the eastern United States), with the region divided into 5 x 5 km grid cells.
 
 **Spatial Data/Population_Density/mean_pop_density.csv** – A CSV file containing the mean population density in 2000, 2005, 2010, 2015, and 2020 of each grid cell in Bioregion NA24. This data was obtained from the gridded population of the world version 4.11 dataset (CIESIN 2018) and was summarized in Google Earth Engine. Citation: [CIESIN] Center for International Earth Science Information Network - Columbia University. (2018). Gridded Population of the World, Version 4 (GPWv4): Population Density, Revision 11. Palisades, NY: NASA Socioeconomic Data and Applications Center (SEDAC). <https://doi.org/10.7927/H49C6VHW>. Accessed 31 Mar 2026.
 
-**iNaturalist_pollinator_observations.rds** – An RDS file containing all iNaturalist insect observations within the orders Coleoptera, Diptera, Hymenoptera, and Lepidoptera observed in the eastern United States in the years 2008-2024.
+**iNaturalist_pollinator_observations.rds** – An RDS file containing all iNaturalist insect observations within the orders Coleoptera, Diptera, Hymenoptera, and Lepidoptera observed in the eastern United States in the years 2008-2024. Citation: GBIF.org (2025, August 6). GBIF occurrence download [Dataset]. Global Biodiversity Information Facility. <https://doi.org/10.15468/dl.7dxq94>
 
 **pollinators_joined_with_grids_5.RDS** – An RDS file containing all iNaturalist insect observations within the orders Coleoptera, Diptera, Hymenoptera, and Lepidoptera observed in Bioregion NA24 2008-2024. All insect observations are linked to the 5 x 5 km grid cell within this Bioregion where they were observed.
 
@@ -62,39 +62,39 @@ This folder contains all data used in the analyses. The only datasets not includ
 
 This folder contains all the main figures and the supplemental figures and tables presented in the article, listed below:
 
-- Figure 1.png
+-   Figure 1.png
 
-- Figure 2.png
+-   Figure 2.png
 
-- Figure 3.png
+-   Figure 3.png
 
-- Figure 4.png
+-   Figure 4.png
 
-- Supplementary Figure 1.jpeg
+-   Supplementary Figure 1.jpeg
 
-- Supplementary Figure 2.jpg
+-   Supplementary Figure 2.jpg
 
-- Supplementary Figure 3.jpg
+-   Supplementary Figure 3.jpg
 
-- Supplementary Figure 4.jpeg
+-   Supplementary Figure 4.jpeg
 
-- Supplementary Figure 5.jpg
+-   Supplementary Figure 5.jpg
 
-- Supplementary Figure 6.png
+-   Supplementary Figure 6.png
 
-- Supplementary Figure 7.png
+-   Supplementary Figure 7.png
 
-- Supplementary Figure 8.png
+-   Supplementary Figure 8.png
 
-- Supplementary Figure 9.png
+-   Supplementary Figure 9.png
 
-- Supplementary Figure 10.png
+-   Supplementary Figure 10.png
 
-- Supplementary Table 1.docx
+-   Supplementary Table 1.docx
 
-- Supplementary Table 2.docx
+-   Supplementary Table 2.docx
 
-- Supplementary Table 3.docx
+-   Supplementary Table 3.docx
 
 # R Folder
 
